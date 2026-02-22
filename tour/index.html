@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SantGenís3 — Visita Virtual · Los Miradores | Agudells Homes</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0e1a;
+      overflow: hidden;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    canvas { display: block; }
+
+    /* ─── OVERLAY / LOADING SCREEN ─── */
+    #overlay {
+      position: fixed; inset: 0;
+      background: linear-gradient(160deg, #0a0e1a 0%, #111827 40%, #0d1f35 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 200;
+      color: #fff;
+      text-align: center;
+      transition: opacity 0.8s ease;
+    }
+    #overlay.hidden { opacity: 0; pointer-events: none; }
+
+    .overlay-logo {
+      font-size: 0.7rem;
+      letter-spacing: 0.4em;
+      color: #c9a96e;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+      font-weight: 400;
+    }
+
+    .overlay-title {
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 200;
+      letter-spacing: 0.15em;
+      line-height: 1.1;
+      color: #f5f0e8;
+      margin-bottom: 0.4rem;
+    }
+
+    .overlay-sub {
+      font-size: clamp(0.95rem, 2vw, 1.3rem);
+      font-weight: 300;
+      color: #8a9ab5;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.8rem;
+    }
+
+    .overlay-meta {
+      font-size: 0.75rem;
+      color: #4a5568;
+      letter-spacing: 0.2em;
+      margin-bottom: 3.5rem;
+    }
+
+    .overlay-divider {
+      width: 40px; height: 1px;
+      background: linear-gradient(90deg, transparent, #c9a96e, transparent);
+      margin: 0 auto 3.5rem;
+    }
+
+    #startBtn {
+      background: transparent;
+      border: 1px solid rgba(201,169,110,0.5);
+      color: #c9a96e;
+      padding: 1rem 3.5rem;
+      font-size: 0.85rem;
+      letter-spacing: 0.25em;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.4s ease;
+      font-family: inherit;
+      position: relative;
+    }
+    #startBtn::before {
+      content: '';
+      position: absolute; inset: 3px;
+      border: 1px solid rgba(201,169,110,0.15);
+      transition: all 0.4s;
+    }
+    #startBtn:hover {
+      background: rgba(201,169,110,0.08);
+      border-color: rgba(201,169,110,0.8);
+      color: #e8d5a0;
+      box-shadow: 0 0 30px rgba(201,169,110,0.1);
+    }
+
+    .overlay-hint {
+      margin-top: 2rem;
+      font-size: 0.72rem;
+      color: #2d3748;
+      letter-spacing: 0.1em;
+    }
+
+    /* ─── PAUSED SCREEN ─── */
+    #paused {
+      position: fixed; inset: 0;
+      background: rgba(5, 8, 18, 0.85);
+      display: none;
+      align-items: center; justify-content: center;
+      z-index: 150;
+      color: #8a9ab5;
+      font-size: 0.9rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      flex-direction: column;
+      gap: 1rem;
+      backdrop-filter: blur(4px);
+    }
+    #paused .paused-icon { font-size: 2rem; color: #c9a96e; }
+
+    /* ─── HUD ELEMENTS ─── */
+    #crosshair {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 50;
+      pointer-events: none;
+      display: none;
+    }
+    #crosshair::before, #crosshair::after {
+      content: '';
+      position: absolute;
+      background: rgba(255,255,255,0.6);
+      border-radius: 2px;
+    }
+    #crosshair::before {
+      width: 12px; height: 1px;
+      top: 0; left: -6px;
+    }
+    #crosshair::after {
+      width: 1px; height: 12px;
+      top: -6px; left: 0;
+    }
+
+    #brand {
+      position: fixed;
+      top: 1.5rem; left: 1.5rem;
+      z-index: 50;
+      pointer-events: none;
+      display: none;
+    }
+    #brand-name {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: #c9a96e;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+    #brand-sub {
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.35);
+      margin-top: 2px;
+    }
+
+    #room-label {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      background: rgba(10, 14, 26, 0.65);
+      border: 1px solid rgba(201,169,110,0.2);
+      color: #e8d5a0;
+      padding: 0.5rem 1.8rem;
+      border-radius: 2px;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      pointer-events: none;
+      display: none;
+      backdrop-filter: blur(8px);
+      transition: opacity 0.4s ease;
+    }
+
+    #controls-hint {
+      position: fixed;
+      bottom: 1.2rem;
+      right: 1.5rem;
+      z-index: 50;
+      color: rgba(255,255,255,0.3);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      pointer-events: none;
+      display: none;
+      text-align: right;
+      line-height: 1.7;
+    }
+
+    #compass-wrap {
+      position: fixed;
+      top: 1.5rem; right: 1.5rem;
+      z-index: 50;
+      width: 48px; height: 48px;
+      display: none;
+    }
+    #compass-canvas {
+      width: 48px; height: 48px;
+    }
+
+    /* Loading bar */
+    #loading-bar-wrap {
+      width: 200px;
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+      margin-bottom: 3rem;
+    }
+    #loading-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #c9a96e, #e8d5a0);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ OVERLAY ═══ -->
+<div id="overlay">
+  <div class="overlay-logo">Agudells Homes</div>
+  <div class="overlay-title">SantGenís3</div>
+  <div class="overlay-sub">Visita Virtual · Piso Los Miradores</div>
+  <div class="overlay-meta">67m² Interior &nbsp;·&nbsp; 10m² Terraza &nbsp;·&nbsp; Barcelona</div>
+  <div class="overlay-divider"></div>
+  <div id="loading-bar-wrap"><div id="loading-bar"></div></div>
+  <button id="startBtn">&#9654;&nbsp; Click para comenzar</button>
+  <div class="overlay-hint">WASD: Mover &nbsp;·&nbsp; Ratón: Mirar &nbsp;·&nbsp; ESC: Pausar</div>
+</div>
+
+<!-- ═══ PAUSED ═══ -->
+<div id="paused">
+  <div class="paused-icon">⏸</div>
+  <div>Pausado — Haz clic para continuar</div>
+</div>
+
+<!-- ═══ HUD ═══ -->
+<div id="crosshair"></div>
+
+<div id="brand">
+  <div id="brand-name">Agudells Homes</div>
+  <div id="brand-sub">SantGenís3 · Los Miradores</div>
+</div>
+
+<div id="room-label">Entrada</div>
+
+<div id="controls-hint">
+  WASD — Mover<br>
+  Ratón — Mirar<br>
+  ESC — Pausar
+</div>
+
+<div id="compass-wrap">
+  <canvas id="compass-canvas" width="96" height="96"></canvas>
+</div>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+
+// ════════════════════════════════════════════════════════════════
+//  SETUP
+// ════════════════════════════════════════════════════════════════
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0xb8d4e8, 0.012);
+
+const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.05, 200);
+// Start in entrance hall, facing west into apartment
+camera.position.set(5.0, 1.65, 0.2);
+camera.rotation.y = Math.PI; // face west
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+document.body.appendChild(renderer.domElement);
+
+// ════════════════════════════════════════════════════════════════
+//  CONTROLS
+// ════════════════════════════════════════════════════════════════
+
+const controls = new PointerLockControls(camera, renderer.domElement);
+
+const overlay    = document.getElementById('overlay');
+const paused     = document.getElementById('paused');
+const crosshair  = document.getElementById('crosshair');
+const brand      = document.getElementById('brand');
+const roomLabel  = document.getElementById('room-label');
+const hintsEl    = document.getElementById('controls-hint');
+const compassWrap = document.getElementById('compass-wrap');
+const startBtn   = document.getElementById('startBtn');
+
+function showHUD(visible) {
+  const d = visible ? 'block' : 'none';
+  crosshair.style.display  = visible ? 'block' : 'none';
+  brand.style.display      = d;
+  roomLabel.style.display  = d;
+  hintsEl.style.display    = d;
+  compassWrap.style.display = d;
+}
+
+startBtn.addEventListener('click', () => controls.lock());
+
+controls.addEventListener('lock', () => {
+  overlay.classList.add('hidden');
+  paused.style.display = 'none';
+  showHUD(true);
+});
+
+controls.addEventListener('unlock', () => {
+  paused.style.display = 'flex';
+  showHUD(false);
+});
+
+paused.addEventListener('click', () => controls.lock());
+
+// ════════════════════════════════════════════════════════════════
+//  KEYBOARD
+// ════════════════════════════════════════════════════════════════
+
+const keys = {};
+addEventListener('keydown', e => { keys[e.code] = true; });
+addEventListener('keyup',   e => { keys[e.code] = false; });
+
+// ════════════════════════════════════════════════════════════════
+//  PROCEDURAL TEXTURES
+// ════════════════════════════════════════════════════════════════
+
+function mkTex(fn) {
+  const c = document.createElement('canvas');
+  fn(c);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+const woodTex = mkTex(c => {
+  c.width = c.height = 512;
+  const ctx = c.getContext('2d');
+  const g = ctx.createLinearGradient(0, 0, 512, 0);
+  g.addColorStop(0,   '#c8956a');
+  g.addColorStop(0.3, '#d4a574');
+  g.addColorStop(0.7, '#ca9d6c');
+  g.addColorStop(1,   '#d8aa7a');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 512, 512);
+  // Grain lines
+  for (let i = 0; i < 40; i++) {
+    const y0 = (512 / 40) * i;
+    ctx.beginPath();
+    ctx.moveTo(0, y0);
+    for (let x = 0; x <= 512; x += 16) {
+      ctx.lineTo(x, y0 + (Math.random() - 0.5) * 4);
+    }
+    const a = 0.03 + Math.random() * 0.08;
+    ctx.strokeStyle = `rgba(0,0,0,${a})`;
+    ctx.lineWidth = 0.5 + Math.random() * 1.5;
+    ctx.stroke();
+  }
+  // Board divisions
+  for (let i = 0; i < 4; i++) {
+    const y = (512 / 4) * i;
+    ctx.fillStyle = 'rgba(0,0,0,0.12)';
+    ctx.fillRect(0, y, 512, 1);
+  }
+});
+woodTex.wrapS = woodTex.wrapT = THREE.RepeatWrapping;
+woodTex.repeat.set(3, 3);
+
+const tileTex = mkTex(c => {
+  c.width = c.height = 256;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#a0a0a0';
+  ctx.fillRect(0, 0, 256, 256);
+  for (let x = 0; x < 256; x += 64) {
+    for (let y = 0; y < 256; y += 64) {
+      ctx.fillStyle = `rgba(${140 + Math.random()*15},${140 + Math.random()*15},${140 + Math.random()*15},1)`;
+      ctx.fillRect(x + 1, y + 1, 62, 62);
+    }
+  }
+  ctx.fillStyle = 'rgba(80,80,80,0.8)';
+  for (let x = 0; x <= 256; x += 64) { ctx.fillRect(x - 1, 0, 2, 256); }
+  for (let y = 0; y <= 256; y += 64) { ctx.fillRect(0, y - 1, 256, 2); }
+});
+tileTex.wrapS = tileTex.wrapT = THREE.RepeatWrapping;
+tileTex.repeat.set(3, 3);
+
+const paverTex = mkTex(c => {
+  c.width = c.height = 512;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#8c8c8c';
+  ctx.fillRect(0, 0, 512, 512);
+  const pw = 128, ph = 64;
+  for (let row = 0; row < 9; row++) {
+    const off = (row % 2) * (pw / 2);
+    for (let col = -1; col < 6; col++) {
+      const lx = col * pw + off, ly = row * ph;
+      const shade = 130 + Math.floor(Math.random() * 20);
+      ctx.fillStyle = `rgb(${shade},${shade},${shade - 5})`;
+      ctx.fillRect(lx + 2, ly + 2, pw - 4, ph - 4);
+    }
+  }
+  ctx.strokeStyle = '#666';
+  ctx.lineWidth = 3;
+  for (let row = 0; row < 9; row++) {
+    const off = (row % 2) * (pw / 2);
+    for (let col = -1; col < 6; col++) {
+      ctx.strokeRect(col * pw + off, row * ph, pw, ph);
+    }
+  }
+});
+paverTex.wrapS = paverTex.wrapT = THREE.RepeatWrapping;
+paverTex.repeat.set(2, 2);
+
+// ════════════════════════════════════════════════════════════════
+//  MATERIALS
+// ════════════════════════════════════════════════════════════════
+
+function lam(color, opts = {}) {
+  return new THREE.MeshLambertMaterial({ color, ...opts });
+}
+
+const M = {
+  wall:        lam(0xf5f5f0),
+  ceiling:     lam(0xffffff),
+  floor:       new THREE.MeshLambertMaterial({ map: woodTex }),
+  bathFloor:   new THREE.MeshLambertMaterial({ map: tileTex }),
+  terFloor:    new THREE.MeshLambertMaterial({ map: paverTex }),
+  door:        lam(0xfafaf8),
+  winFrame:    lam(0x8a8a8a),
+  winGlass:    lam(0x9abfcc, { transparent: true, opacity: 0.18, side: THREE.DoubleSide }),
+  slidingGlass: lam(0x9abfcc, { transparent: true, opacity: 0.12, side: THREE.DoubleSide }),
+  glassRail:   lam(0xc0dae0, { transparent: true, opacity: 0.25, side: THREE.DoubleSide }),
+  railTop:     lam(0x888888),
+  sofa:        lam(0x3d3d3d),
+  sofaLight:   lam(0x4a4a4a),
+  cushion:     lam(0x6a6a6a),
+  coffeeTable: lam(0x7a5c2e),
+  tv:          lam(0x111111),
+  tvScreen:    lam(0x0a0f1e, { emissive: 0x050810, emissiveIntensity: 0.5 }),
+  tvStand:     lam(0x2a2a2a),
+  kitchenCab:  lam(0xf0f0ee),
+  kitchenCtr:  lam(0x4a4a4a),
+  kitchenTop:  lam(0x3c3c3c),
+  sink:        lam(0x888888),
+  bedFrame:    lam(0xf0efed),
+  bed1:        lam(0x5b7fa6),  // blue bedding
+  bed2:        lam(0x8a5a6a),  // dusty rose
+  pillow1:     lam(0xeef2f6),
+  pillow2:     lam(0xf5eeee),
+  wardrobe:    lam(0xf5f4f2),
+  wardrobeDet: lam(0xd8d5d0),
+  bathtub:     lam(0xfafafa),
+  shower:      lam(0x9ab5b8, { transparent: true, opacity: 0.35, side: THREE.DoubleSide }),
+  showerBase:  lam(0xcccccc),
+  toilet:      lam(0xffffff),
+  vanity:      lam(0xf0f0ee),
+  vanityTop:   lam(0x777777),
+  mirror:      new THREE.MeshPhongMaterial({ color: 0xc8e0e8, shininess: 200, specular: 0x88aacc }),
+  chairOut:    lam(0xc8c8c4),
+  tableOut:    lam(0xb4b4b0),
+  plant:       lam(0x3a7a3a),
+  pot:         lam(0x9a5c3a),
+  ground:      lam(0x5a5850),
+  building:    lam(0x4a4a58),
+  buildingLit: lam(0x5a5870),
+  mountain:    lam(0x3a5040),
+  mountainDk:  lam(0x2d3d30),
+  sky:         new THREE.MeshBasicMaterial({ color: 0x6ab4d8, side: THREE.BackSide }),
+  skyHorizon:  lam(0xd0e8f0),
+  ground2:     lam(0x4a4a3a),
+  floorSlab:   lam(0x3a3a3a),
+};
+
+// ════════════════════════════════════════════════════════════════
+//  SCENE HELPERS
+// ════════════════════════════════════════════════════════════════
+
+function mesh(geo, mat, x, y, z, rx, ry, rz) {
+  const m = new THREE.Mesh(geo, mat);
+  m.position.set(x, y, z);
+  if (rx) m.rotation.x = rx;
+  if (ry) m.rotation.y = ry;
+  if (rz) m.rotation.z = rz;
+  m.castShadow = true;
+  m.receiveShadow = true;
+  scene.add(m);
+  return m;
+}
+
+function box(x, y, z, w, h, d, mat) {
+  return mesh(new THREE.BoxGeometry(w, h, d), mat, x, y, z);
+}
+
+function cyl(x, y, z, rt, rb, h, mat, segs) {
+  return mesh(new THREE.CylinderGeometry(rt, rb, h, segs || 12), mat, x, y, z);
+}
+
+// Wall height & thickness constants
+const WH = 2.70;   // wall height
+const WT = 0.12;   // wall thickness
+const HWH = WH / 2; // half wall height (for centering)
+
+// A standard wall (box centered at y=HWH)
+function mkWall(x, z, w, d, mat) {
+  box(x, HWH, z, w, WH, d, mat || M.wall);
+}
+
+// Wall with a door opening (split into up-to-3 segments + lintel)
+// doorCX = center X of door in the wall (for walls running east-west)
+// doorCZ = center Z of door (for walls running north-south)
+function mkWallWithDoor(x, z, wallW, wallD, doorCX, doorCZ, doorW, mat) {
+  mat = mat || M.wall;
+  const dh = 2.10;  // door height
+  const lintelH = WH - dh;
+
+  if (doorCX !== null) {
+    // Wall runs along X axis (east-west wall at fixed Z)
+    // Split into left, right, and lintel
+    const leftW = (x - wallW/2 + wallW/2) - (doorCX - doorW/2) - (x - wallW/2);
+    const rightW = (x + wallW/2) - (doorCX + doorW/2);
+    const leftCX = x - wallW/2 + leftW/2;
+    const rightCX = doorCX + doorW/2 + rightW/2;
+
+    if (leftW > 0.01)  box(leftCX,  HWH,    z, leftW,  WH,       wallD, mat);
+    if (rightW > 0.01) box(rightCX, HWH,    z, rightW, WH,       wallD, mat);
+    box(doorCX, dh + lintelH/2, z, doorW, lintelH, wallD, mat); // lintel
+    // Door frame visual (thin)
+    box(doorCX - doorW/2 - 0.02, dh/2, z, 0.04, dh, wallD + 0.01, M.door);
+    box(doorCX + doorW/2 + 0.02, dh/2, z, 0.04, dh, wallD + 0.01, M.door);
+    box(doorCX, dh + 0.02, z, doorW + 0.04, 0.04, wallD + 0.01, M.door);
+  } else {
+    // Wall runs along Z axis (north-south wall at fixed X), doorCZ is door center
+    const frontW = doorCZ - doorW/2 - (z - wallD/2);
+    const backW  = (z + wallD/2) - (doorCZ + doorW/2);
+    const frontCZ = z - wallD/2 + frontW/2;
+    const backCZ  = doorCZ + doorW/2 + backW/2;
+
+    if (frontW > 0.01)  box(x, HWH,    frontCZ, wallW, WH,       frontW, mat);
+    if (backW > 0.01)   box(x, HWH,    backCZ,  wallW, WH,       backW,  mat);
+    box(x, dh + lintelH/2, doorCZ, wallW, lintelH, doorW, mat);
+    box(x, dh/2, doorCZ - doorW/2 - 0.02, wallW + 0.01, dh, 0.04, M.door);
+    box(x, dh/2, doorCZ + doorW/2 + 0.02, wallW + 0.01, dh, 0.04, M.door);
+    box(x, dh + 0.02, doorCZ, wallW + 0.01, 0.04, doorW + 0.04, M.door);
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  COLLISION — walls as obstacles (AABB approach)
+// ════════════════════════════════════════════════════════════════
+
+const PR  = 0.22;  // player radius (metres)
+const WT2 = WT / 2;
+
+// Interior wall segments — each is a {minX,maxX,minZ,maxZ} box
+// Doors create gaps; only the SOLID parts are added here.
+const wallBoxes = [];
+function addWB(minX, maxX, minZ, maxZ) { wallBoxes.push({minX, maxX, minZ, maxZ}); }
+
+{
+  const DW = 0.85; // door width
+  const hw = WT2;  // half-wall thickness
+
+  // ── Wall at z = -0.50 (bedroom zone / hallway): 3 doors ──
+  // Master bed door centre x=-3.50 → gap x:[-3.925, -3.075]
+  // Bed-2 door   centre x= 0.00 → gap x:[-0.425,  0.425]
+  // Bathroom door centre x= 2.75 → gap x:[ 2.325,  3.175]
+  addWB(-5.50,    -3.925,  -0.50 - hw, -0.50 + hw); // west section
+  addWB(-3.075,   -0.425,  -0.50 - hw, -0.50 + hw); // mid-1
+  addWB( 0.425,    2.325,  -0.50 - hw, -0.50 + hw); // mid-2
+  addWB( 3.175,    4.00,   -0.50 - hw, -0.50 + hw); // east of bath door
+  addWB( 4.00,     5.50,   -0.50 - hw, -0.50 + hw); // entry hall north
+
+  // ── Vertical partitions (north-south) ──
+  addWB(-1.50 - hw, -1.50 + hw,  -3.50, -0.50); // master bed / bed-2
+  addWB( 1.50 - hw,  1.50 + hw,  -3.50, -0.50); // bed-2 / bathroom
+  addWB( 4.00 - hw,  4.00 + hw,  -3.50, -0.50); // bathroom east
+  addWB( 4.00 - hw,  4.00 + hw,   0.50,  1.00); // entry hall south stub
+
+  // ── Terrace railings (1 m tall solid rails) ──
+  addWB(-2.05,  2.05,   5.97, 6.05); // south railing
+  addWB( 1.97,  2.05,   3.50, 6.00); // east railing
+  addWB(-2.05, -1.97,   3.50, 6.00); // west railing
+}
+
+function isNavigable(nx, nz) {
+  // ── Exterior bounds ──
+  if (nx < -5.36 || nx > 5.36) return false;   // west/east walls
+  if (nz < -3.36) return false;                  // north wall
+
+  // East wall has front door gap at z [0.05, 0.90]
+  if (nx > 5.26 && !(nz > 0.05 && nz < 0.90)) return false;
+
+  // South wall at z = 3.50: only open where the sliding door is (x: -1.05..1.05)
+  if (nz > 3.44 && (nx < -1.05 || nx > 1.05) && nz < 3.60) return false;
+
+  // Terrace outer bounds
+  if (nz > 5.88) return false;
+  if (nz > 3.56 && (nx < -1.88 || nx > 1.88)) return false;
+
+  // ── Interior wall collisions ──
+  for (const w of wallBoxes) {
+    if (nx + PR > w.minX && nx - PR < w.maxX &&
+        nz + PR > w.minZ && nz - PR < w.maxZ) return false;
+  }
+  return true;
+}
+
+// Room detection — simple zone lookup
+const roomZones = [
+  { name: 'Terraza',              minX: -2.1,  maxX:  2.1,  minZ:  3.40, maxZ:  6.1  },
+  { name: 'Entrada',              minX:  3.80,  maxX:  5.50, minZ: -0.60, maxZ:  1.15 },
+  { name: 'Habitación Principal', minX: -5.50,  maxX: -1.50, minZ: -3.50, maxZ: -0.50 },
+  { name: 'Habitación 2',         minX: -1.50,  maxX:  1.50, minZ: -3.50, maxZ: -0.50 },
+  { name: 'Baño',                 minX:  1.50,  maxX:  4.00, minZ: -3.50, maxZ: -0.50 },
+  { name: 'Pasillo',              minX: -5.50,  maxX:  4.00, minZ: -0.50, maxZ:  0.50 },
+  { name: 'Salón · Cocina',       minX: -5.50,  maxX:  4.00, minZ:  0.50, maxZ:  3.50 },
+];
+
+function detectRoom(x, z) {
+  for (const r of roomZones) {
+    if (x >= r.minX && x <= r.maxX && z >= r.minZ && z <= r.maxZ) return r.name;
+  }
+  return currentRoom;
+}
+
+// ════════════════════════════════════════════════════════════════
+//  LIGHTING
+// ════════════════════════════════════════════════════════════════
+
+// Ambient: warm Mediterranean light
+const ambient = new THREE.AmbientLight(0xfff0d8, 0.55);
+scene.add(ambient);
+
+// Sun: directional from south-west, high (afternoon)
+const sun = new THREE.DirectionalLight(0xfff5d8, 1.4);
+sun.position.set(8, 25, 12);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.camera.left  = -18; sun.shadow.camera.right = 18;
+sun.shadow.camera.top   =  18; sun.shadow.camera.bottom = -18;
+sun.shadow.camera.near  = 0.5; sun.shadow.camera.far    = 60;
+sun.shadow.bias = -0.001;
+scene.add(sun);
+
+// Interior ceiling lights (point lights)
+function ptLight(x, y, z, color, intensity, dist) {
+  const l = new THREE.PointLight(color, intensity, dist);
+  l.position.set(x, y, z);
+  scene.add(l);
+  return l;
+}
+
+ptLight(-1.0,  2.5,  2.0,  0xfff5e0, 0.8, 12); // living room
+ptLight(-4.0,  2.5,  2.0,  0xfff5e0, 0.5,  8); // kitchen side
+ptLight(-3.5,  2.5, -2.0,  0xfff8e8, 0.7, 10); // master bedroom
+ptLight( 0.0,  2.5, -2.0,  0xfff8e8, 0.6,  8); // bedroom 2
+ptLight( 2.75, 2.5, -2.0,  0xf0f8ff, 0.5,  8); // bathroom
+ptLight( 4.75, 2.5,  0.25, 0xfff5e0, 0.4,  6); // entry hall
+ptLight( 0.0,  2.0,  4.8,  0xfff0d8, 0.4,  8); // terrace
+
+// ════════════════════════════════════════════════════════════════
+//  SKY & ENVIRONMENT
+// ════════════════════════════════════════════════════════════════
+
+// Sky dome
+const skyDome = new THREE.Mesh(
+  new THREE.SphereGeometry(130, 24, 12),
+  new THREE.MeshBasicMaterial({ color: 0x87c8e8, side: THREE.BackSide })
+);
+scene.add(skyDome);
+
+// Horizon haze layer
+box(0, -2, 0, 260, 4, 260, new THREE.MeshBasicMaterial({ color: 0xc8dce8, transparent: true, opacity: 0.4 }));
+
+// Far ground (urban landscape)
+box(0, -1.5, 25,  150, 2, 50,  M.ground);
+box(0, -1.5, -30, 150, 2, 50,  M.ground2);
+box(-40, -1.5, 0, 20, 2, 50, M.ground);
+box( 40, -1.5, 0, 20, 2, 50, M.ground);
+
+// ── City skyline (south) ──
+const cityBuildings = [
+  // [x, z, w, d, h, color]
+  [-22, 18, 5, 4, 12, 0x4a4a58], [-16, 16, 4, 3, 18, 0x505060],
+  [-10, 14, 6, 4, 14, 0x484858], [ -4, 16, 5, 4, 22, 0x545464],
+  [  2, 14, 4, 5, 16, 0x505060], [  8, 15, 7, 4, 10, 0x484858],
+  [ 15, 17, 5, 3, 20, 0x545468], [ 22, 15, 6, 4, 15, 0x4a4a5c],
+  [-18, 20, 3, 3,  8, 0x404050], [ -7, 19, 4, 3, 12, 0x484858],
+  [  5, 20, 3, 3, 18, 0x50505e], [ 12, 18, 4, 3, 11, 0x484855],
+  [-25, 22, 4, 3,  7, 0x3e3e4a], [ 28, 20, 5, 4, 13, 0x4c4c5a],
+];
+
+for (const [bx, bz, bw, bd, bh, bc] of cityBuildings) {
+  const bmat = new THREE.MeshLambertMaterial({ color: bc });
+  box(bx, bh/2 - 1.5, bz, bw, bh, bd, bmat);
+  // windows (glowing yellow dots suggest)
+  const winMat = new THREE.MeshBasicMaterial({ color: 0xffd080 });
+  for (let wy = 1; wy < bh - 1; wy += 2) {
+    for (let wx = -bw/2 + 0.5; wx < bw/2; wx += 1.2) {
+      if (Math.random() > 0.4) {
+        box(bx + wx, bh/2 - 1.5 - bh/2 + wy, bz - bd/2 - 0.02, 0.3, 0.5, 0.02,
+          Math.random() > 0.3 ? winMat : bmat);
+      }
+    }
+  }
+}
+
+// ── Collserola mountains (north) ──
+function addMountain(cx, cz, radius, h, color) {
+  const geo = new THREE.ConeGeometry(radius, h, 7);
+  const mat = new THREE.MeshLambertMaterial({ color });
+  const m = new THREE.Mesh(geo, mat);
+  m.position.set(cx, h / 2 - 2, cz);
+  m.rotation.y = Math.random();
+  scene.add(m);
+}
+addMountain(-20, -40, 18, 14, 0x3a5240);
+addMountain(  0, -45, 22, 16, 0x334a3a);
+addMountain( 18, -38, 16, 12, 0x3d5642);
+addMountain( -8, -35, 12,  9, 0x405842);
+addMountain( 10, -32, 10,  7, 0x3c5440);
+// Mountain foothills
+box(0, -2, -38, 80, 3, 20, new THREE.MeshLambertMaterial({ color: 0x3a4e3c }));
+
+// ════════════════════════════════════════════════════════════════
+//  APARTMENT GEOMETRY
+// ════════════════════════════════════════════════════════════════
+
+// ── Building slab (floor and ceiling slabs, exterior view) ──
+box(0, -0.15, 0, 12, 0.3, 8.5, M.floorSlab); // floor slab
+box(0, WH + 0.15, 0, 12, 0.3, 8.5, M.floorSlab); // ceiling slab
+
+// ════ FLOORS ════
+
+// Living + Kitchen: X[-5.5,4.0], Z[0.5, 3.5]
+box(-0.75, 0.025, 2.0, 9.5, 0.05, 3.0, M.floor);
+
+// Hallway: X[-5.5,4.0], Z[-0.5,0.5] — full width so player can reach all bedroom doors
+box(-0.75, 0.025, 0.0, 9.5, 0.05, 1.0, M.floor);
+
+// Entry hall: X[4.0,5.5], Z[-0.5,1.0]
+box(4.75, 0.025, 0.25, 1.5, 0.05, 1.5, M.floor);
+
+// Master Bedroom: X[-5.5,-1.5], Z[-3.5,-0.5]
+box(-3.5, 0.025, -2.0, 4.0, 0.05, 3.0, M.floor);
+
+// Bedroom 2: X[-1.5,1.5], Z[-3.5,-0.5]
+box(0.0, 0.025, -2.0, 3.0, 0.05, 3.0, M.floor);
+
+// Bathroom: X[1.5,4.0], Z[-3.5,-0.5]
+box(2.75, 0.025, -2.0, 2.5, 0.05, 3.0, M.bathFloor);
+
+// Terrace: X[-2.0,2.0], Z[3.5,6.0]
+box(0.0, -0.04, 4.75, 4.0, 0.05, 2.5, M.terFloor);
+
+// ════ CEILINGS ════
+
+box(-0.75, WH - 0.025, 2.0,  9.5, 0.05, 3.0, M.ceiling); // living
+box(-0.75, WH - 0.025, 0.0,  9.5, 0.05, 1.0, M.ceiling); // hallway full width
+box(4.75,  WH - 0.025, 0.25, 1.5, 0.05, 1.5, M.ceiling); // entry
+box(-3.5,  WH - 0.025, -2.0, 4.0, 0.05, 3.0, M.ceiling); // master bed
+box(0.0,   WH - 0.025, -2.0, 3.0, 0.05, 3.0, M.ceiling); // bed2
+box(2.75,  WH - 0.025, -2.0, 2.5, 0.05, 3.0, M.ceiling); // bathroom
+
+// ════ EXTERIOR WALLS ════
+
+// NORTH wall (z = -3.5): full 11m — windows are placed over it as transparent panels
+mkWall(0, -3.5, 11.0, WT);
+
+// SOUTH wall (z = 3.5): west part + east part + gap for terrace sliding door (x:-1.0 to 1.0)
+// West: x:-5.5 to -1.1 (4.4m)
+box(-3.3, HWH, 3.5, 4.4, WH, WT, M.wall);
+// East: x:1.1 to 4.0 (2.9m)
+box(2.55, HWH, 3.5, 2.9, WH, WT, M.wall);
+// Far east south wall: x:4.0 to 5.5 (entry hall south)
+box(4.75, HWH, 3.5, 1.5, WH, WT, M.wall);
+// Lintel above sliding door
+box(0.0, WH - (WH - 2.35)/2, 3.5, 2.2, WH - 2.35, WT, M.wall);
+
+// WEST wall (x = -5.5): full, with windows
+mkWall(-5.5, 0, WT, 7.0);
+
+// EAST wall (x = 5.5): full, with front door gap
+// Door at z: 0.05 to 0.90 (center z=0.475)
+// Segments: z:-3.5 to 0.05 (3.55m) + z:0.90 to 3.5 (2.6m) + lintel
+box(5.5, HWH, -1.725, WT, WH, 3.55, M.wall);   // north of door
+box(5.5, HWH,  2.2,   WT, WH, 2.6,  M.wall);   // south of door
+box(5.5, 2.1 + (WH - 2.10)/2, 0.475, WT, WH - 2.10, 0.85, M.wall); // lintel
+// Door frame
+box(5.5, 1.05, 0.05,  WT + 0.01, 2.10, 0.04, M.door); // left jamb
+box(5.5, 1.05, 0.90,  WT + 0.01, 2.10, 0.04, M.door); // right jamb
+box(5.5, 2.12, 0.475, WT + 0.01, 0.04, 0.89, M.door); // head
+
+// ════ INTERIOR WALLS ════
+
+// Wall at z = -0.50 (south wall of bedroom zone / north wall of hallway)
+// Has 3 doors: master bed, bed2, bathroom
+
+// Door to master bedroom: center at x = -3.50, w = 0.85
+// Door to bed2:           center at x =  0.00, w = 0.85
+// Door to bathroom:       center at x =  2.75, w = 0.85
+
+{
+  // Segments between doors:
+  const DW = 0.85;
+  const segs = [
+    [-5.5, -3.5 - DW/2],           // west edge to master bed door left
+    [-3.5 + DW/2, 0.0 - DW/2],     // between master bed door and bed2 door
+    [ 0.0 + DW/2, 2.75 - DW/2],    // between bed2 door and bathroom door
+    [ 2.75 + DW/2, 4.0],           // bathroom door right to interior partition
+  ];
+  const Z0 = -0.5;
+  for (const [x0, x1] of segs) {
+    if (x1 > x0) {
+      const w = x1 - x0;
+      box((x0 + x1) / 2, HWH, Z0, w, WH, WT, M.wall);
+    }
+  }
+  // North side of entry hall (wall at z=-0.5, x:4.0 to 5.5)
+  box(4.75, HWH, Z0, 1.5, WH, WT, M.wall);
+
+  // Door lintels & frames for hallway→rooms
+  function addDoor(cx, cz) {
+    const dh = 2.10, lintelH = WH - dh;
+    box(cx, dh + lintelH/2, cz, DW, lintelH, WT + 0.01, M.wall);
+    // Frame
+    box(cx - DW/2 - 0.025, dh/2, cz, 0.05, dh, WT + 0.02, M.door);
+    box(cx + DW/2 + 0.025, dh/2, cz, 0.05, dh, WT + 0.02, M.door);
+    box(cx, dh + 0.02, cz, DW + 0.10, 0.04, WT + 0.02, M.door);
+  }
+  addDoor(-3.50, Z0);
+  addDoor( 0.00, Z0);
+  addDoor( 2.75, Z0);
+}
+
+// Interior partition: master bed / bed2 (at x = -1.50, z:-3.5 to -0.5)
+box(-1.5, HWH, -2.0, WT, WH, 3.0, M.wall);
+
+// Interior partition: bed2 / bathroom (at x = 1.50, z:-3.5 to -0.5)
+box(1.5, HWH, -2.0, WT, WH, 3.0, M.wall);
+
+// Interior partition: bathroom east / entry hall west (at x = 4.00)
+// Runs z:-3.5 to -0.5 (bathroom wall east side, corridor north)
+box(4.0, HWH, -2.0, WT, WH, 3.0, M.wall);
+// Short wall closing entry hall on south: z=1.0, x:4.0 to 5.5
+box(4.75, HWH, 1.0, 1.5, WH, WT, M.wall);
+
+// Small knee wall (hallway/living transition) - just a visual hint
+// Not a full wall — hallway opens freely into living room
+
+// ════ WINDOWS ════
+
+// Helper: window in a north/south-facing wall
+function addNorthWin(cx, cz, winW, winH) {
+  const sillH = 0.30, frameT = 0.06;
+  const cY = sillH + winH / 2;
+  // Glass
+  box(cx, cY, cz, winW, winH, 0.02, M.winGlass);
+  // Frame
+  box(cx, cY + winH/2 + frameT/2, cz, winW + frameT*2, frameT, frameT*2, M.winFrame); // top
+  box(cx, sillH - frameT/2, cz, winW + frameT*2, frameT, frameT*2, M.winFrame); // sill
+  box(cx - winW/2 - frameT/2, cY, cz, frameT, winH + frameT*2, frameT*2, M.winFrame); // left
+  box(cx + winW/2 + frameT/2, cY, cz, frameT, winH + frameT*2, frameT*2, M.winFrame); // right
+  // Mid-rail
+  box(cx, cY, cz, winW, frameT * 0.5, frameT * 2, M.winFrame);
+}
+
+// Helper: window in east/west wall
+function addWestWin(cx, cz, winW, winH) {
+  const sillH = 0.30, frameT = 0.06;
+  const cY = sillH + winH / 2;
+  box(cx, cY, cz, 0.02, winH, winW, M.winGlass);
+  box(cx, cY + winH/2 + frameT/2, cz, frameT*2, frameT, winW + frameT*2, M.winFrame);
+  box(cx, sillH - frameT/2, cz, frameT*2, frameT, winW + frameT*2, M.winFrame);
+  box(cx, cY, cz - winW/2 - frameT/2, frameT*2, winH + frameT*2, frameT, M.winFrame);
+  box(cx, cY, cz + winW/2 + frameT/2, frameT*2, winH + frameT*2, frameT, M.winFrame);
+  box(cx, cY, cz, frameT*2, winH, frameT*0.5, M.winFrame);
+}
+
+// North wall windows (in bedrooms)
+addNorthWin(-3.50, -3.5,  1.5, 1.8);  // master bedroom north
+addNorthWin( 0.00, -3.5,  1.0, 1.5);  // bedroom 2 north
+addNorthWin( 2.75, -3.5,  0.7, 1.2);  // bathroom north (small)
+
+// West wall windows (living room and master bed)
+addWestWin(-5.5, -2.0, 1.5, 1.8);  // master bedroom west
+addWestWin(-5.5,  2.0, 2.2, 2.3);  // living room large west window
+
+// Sliding glass door to terrace (at z=3.5, x:-1.0 to 1.0)
+{
+  const swW = 2.0, swH = 2.35, frameT = 0.06;
+  const swY = swH / 2;
+  box(0, swY, 3.5, swW, swH, 0.03, M.slidingGlass);
+  box(0, swH + frameT/2, 3.5, swW + frameT, frameT, frameT*2, M.winFrame);
+  box(-swW/2 - frameT/2, swY, 3.5, frameT, swH + frameT, frameT*2, M.winFrame);
+  box( swW/2 + frameT/2, swY, 3.5, frameT, swH + frameT, frameT*2, M.winFrame);
+  // Center divider (sliding door panel)
+  box(0, swY, 3.5, frameT*0.5, swH, frameT*2, M.winFrame);
+  // Handle
+  box(0.12, swY, 3.51, frameT*0.5, 0.15, 0.015, M.winFrame);
+}
+
+// ════ TERRACE ════
+
+// Glass railings: south, east, west
+// South railing (z=6.0)
+box(0, 0.5, 6.0,   4.0, 1.0, 0.04, M.glassRail);
+box(0, 1.02, 6.0,  4.12, 0.04, 0.08, M.railTop);
+// East railing (x=2.0)
+box(2.0, 0.5, 4.75,  0.04, 1.0, 2.5, M.glassRail);
+box(2.0, 1.02, 4.75, 0.08, 0.04, 2.52, M.railTop);
+// West railing (x=-2.0)
+box(-2.0, 0.5, 4.75, 0.04, 1.0, 2.5, M.glassRail);
+box(-2.0, 1.02, 4.75, 0.08, 0.04, 2.52, M.railTop);
+
+// Terrace furniture
+// Table
+box(0.5, 0.38, 4.9,  0.75, 0.04, 0.75, M.tableOut); // top
+box(0.5, 0.19, 4.9,  0.65, 0.34, 0.65, M.tableOut); // body/pedestal simplified
+// Chair 1 (left)
+box(-0.55, 0.22, 4.9, 0.42, 0.44, 0.42, M.chairOut);
+box(-0.55, 0.55, 5.2, 0.42, 0.55, 0.06, M.chairOut); // back
+// Chair 2 (right)
+box(1.6, 0.22, 4.9, 0.42, 0.44, 0.42, M.chairOut);
+box(1.6, 0.55, 5.2, 0.42, 0.55, 0.06, M.chairOut);
+
+// Potted plant (near west railing)
+cyl(-1.5, 0.25, 5.5, 0.18, 0.22, 0.5, M.pot, 8);
+cyl(-1.5, 0.65, 5.5, 0.22, 0.15, 0.5, M.plant, 8);
+// Smaller leaves
+cyl(-1.5, 0.90, 5.5, 0.18, 0.05, 0.28, M.plant, 8);
+// Another plant near east
+cyl(1.5, 0.22, 5.7, 0.14, 0.16, 0.44, M.pot, 8);
+cyl(1.5, 0.55, 5.7, 0.16, 0.10, 0.4, M.plant, 8);
+
+// ════ LIVING ROOM FURNITURE ════
+
+// TV wall on north side of living room (z ≈ 0.6)
+// TV unit
+box(-0.5, 0.22, 0.65, 1.8, 0.44, 0.40, M.tvStand); // console
+box(-0.5, 0.90, 0.58, 1.6, 0.90, 0.04, M.tv);       // TV panel
+box(-0.5, 0.90, 0.59, 1.4, 0.78, 0.02, M.tvScreen);  // screen
+// TV stand legs
+for (const dx of [-0.7, 0.7]) {
+  box(-0.5 + dx, 0.03, 0.65, 0.08, 0.06, 0.3, M.tvStand);
+}
+
+// L-shaped sofa
+// Main section (facing TV, along south part): x:-5.1 to -2.0, z:2.2 to 3.15
+box(-3.55, 0.22, 2.67, 3.1, 0.44, 0.95, M.sofa);   // seat
+box(-3.55, 0.52, 3.05, 3.1, 0.55, 0.20, M.sofa);   // back cushion
+box(-5.0,  0.38, 2.67, 0.22, 0.80, 0.95, M.sofa);  // left armrest
+box(-2.1,  0.38, 2.67, 0.22, 0.80, 0.95, M.sofa);  // right armrest
+// Cushions
+box(-4.3, 0.46, 2.55, 0.65, 0.12, 0.75, M.cushion);
+box(-3.55,0.46, 2.55, 0.65, 0.12, 0.75, M.cushion);
+box(-2.8, 0.46, 2.55, 0.65, 0.12, 0.75, M.cushion);
+
+// L extension (perpendicular, x:-5.1 to -4.0, z:1.5 to 2.2)
+box(-4.55, 0.22, 1.72, 1.1, 0.44, 0.72, M.sofa);   // seat
+box(-4.17, 0.38, 1.72, 0.22, 0.80, 0.72, M.sofa);  // right arm (shared with main)
+box(-4.55, 0.52, 1.4,  1.1, 0.55, 0.20, M.sofa);   // back
+// Throw pillow
+box(-4.55, 0.54, 1.65, 0.3, 0.22, 0.28, new THREE.MeshLambertMaterial({ color: 0x8a6a5a }));
+
+// Coffee table
+box(-2.1, 0.21, 1.8, 1.0, 0.04, 0.65, M.coffeeTable); // glass top
+box(-2.1, 0.11, 1.8, 0.9, 0.02, 0.55, M.coffeeTable); // lower shelf
+// Legs
+for (const [dx, dz] of [[-0.43, -0.26], [0.43, -0.26], [-0.43, 0.26], [0.43, 0.26]]) {
+  box(-2.1 + dx, 0.11, 1.8 + dz, 0.04, 0.22, 0.04, M.coffeeTable);
+}
+
+// ════ KITCHEN ════
+// Kitchen: south side of living room, X:1.5 to 4.0, Z:2.5 to 3.35
+
+// Counter along south wall (Z ≈ 3.2 to 3.35)
+// Lower cabinets
+box(2.75, 0.48, 3.18, 2.5, 0.95, 0.32, M.kitchenCab);
+// Counter top
+box(2.75, 0.96, 3.17, 2.52, 0.04, 0.36, M.kitchenTop);
+// Upper cabinets
+box(2.75, 2.0, 3.27, 2.5, 0.60, 0.26, M.kitchenCab);
+// Cabinet door lines
+for (let xi = 0; xi < 3; xi++) {
+  box(2.75 - 0.83 + xi * 0.83, 0.48, 3.02, 0.04, 0.90, 0.02, M.wardrobeDet);
+}
+
+// L-extension counter (east wall of kitchen, x ≈ 3.72, z:1.8 to 3.18)
+box(3.72, 0.48, 2.48, 0.32, 0.95, 2.72, M.kitchenCab);
+box(3.73, 0.96, 2.48, 0.30, 0.04, 2.72, M.kitchenTop);
+
+// Sink (recessed in counter)
+box(2.0, 0.98, 3.17, 0.56, 0.03, 0.26, new THREE.MeshLambertMaterial({ color: 0x8a8a8a }));
+// Tap
+box(2.0, 1.12, 3.05, 0.03, 0.26, 0.03, M.winFrame);
+box(2.0, 1.23, 3.07, 0.14, 0.02, 0.04, M.winFrame);
+
+// Hob (on counter, east side)
+box(3.2, 0.98, 3.17, 0.50, 0.02, 0.32, new THREE.MeshLambertMaterial({ color: 0x2a2a2a }));
+// Burner circles
+for (const [hx, hz] of [[3.1, -0.07], [3.3, -0.07], [3.1, 0.07], [3.3, 0.07]]) {
+  cyl(hx, 0.995, 3.17 + hz, 0.05, 0.05, 0.01, new THREE.MeshLambertMaterial({ color: 0x111 }));
+}
+
+// ════ MASTER BEDROOM ════
+// X[-5.5,-1.5], Z[-3.5,-0.5]
+
+// Double bed (headboard against north wall)
+box(-3.5, 0.15, -2.25, 1.8, 0.30, 2.0, M.bedFrame); // base
+box(-3.5, 0.50, -2.25, 1.8, 0.52, 1.85, M.bed1);    // mattress + bedding (blue)
+box(-3.5, 0.85, -3.38, 1.8, 0.70, 0.12, M.bedFrame); // headboard
+
+// Pillows
+box(-3.9, 0.78, -2.95, 0.68, 0.14, 0.46, M.pillow1);
+box(-3.1, 0.78, -2.95, 0.68, 0.14, 0.46, M.pillow2);
+
+// Bedside table left
+box(-4.65, 0.30, -2.8, 0.42, 0.60, 0.42, M.bedFrame);
+box(-4.65, 0.62, -2.8, 0.42, 0.04, 0.42, M.wardrobeDet);
+// Lamp on table
+cyl(-4.65, 0.80, -2.8, 0.12, 0.06, 0.30, new THREE.MeshLambertMaterial({ color: 0xf0e8d8 }));
+cyl(-4.65, 0.98, -2.8, 0.18, 0.12, 0.22, new THREE.MeshLambertMaterial({ color: 0xf5f0e8, emissive: 0xfff5d0, emissiveIntensity: 0.3 }));
+
+// Bedside table right
+box(-2.35, 0.30, -2.8, 0.42, 0.60, 0.42, M.bedFrame);
+box(-2.35, 0.62, -2.8, 0.42, 0.04, 0.42, M.wardrobeDet);
+
+// Built-in wardrobe (along east wall of master bed, x ≈ -1.65)
+box(-1.72, 1.10, -2.0, 0.3, 2.2, 2.5, M.wardrobe);
+// Wardrobe doors
+box(-1.72, 1.10, -1.35, 0.29, 2.0, 0.02, M.wardrobeDet);
+box(-1.72, 1.10, -2.65, 0.29, 2.0, 0.02, M.wardrobeDet);
+box(-1.72, 1.10, -2.0,  0.29, 2.0, 0.02, M.wardrobeDet);
+// Handles
+for (const dz of [-2.55, -1.73, -0.90]) {
+  box(-1.58, 1.10, dz, 0.02, 0.16, 0.02, M.winFrame);
+}
+
+// Small desk / chair area in master bedroom
+box(-4.8, 0.40, -0.85, 1.0, 0.04, 0.55, M.coffeeTable); // desk top
+box(-4.8, 0.20, -0.85, 0.90, 0.35, 0.45, M.bedFrame);   // desk body
+
+// ════ BEDROOM 2 ════
+// X[-1.5,1.5], Z[-3.5,-0.5]
+
+// Single/double bed (headboard against north wall)
+box(0.0, 0.15, -2.4, 1.4, 0.28, 1.9, M.bedFrame);
+box(0.0, 0.48, -2.4, 1.4, 0.46, 1.75, M.bed2); // rose bedding
+box(0.0, 0.80, -3.38, 1.4, 0.65, 0.12, M.bedFrame); // headboard
+box(0.0, 0.74, -3.05, 0.65, 0.13, 0.44, M.pillow1);
+
+// Bedside table
+box(0.85, 0.28, -2.85, 0.38, 0.56, 0.38, M.bedFrame);
+
+// Wardrobe (against west wall, fully inside bedroom z-range)
+box(-1.25, 1.1, -1.85, 0.3, 2.2, 1.9, M.wardrobe);
+box(-1.25, 1.1, -1.85, 0.29, 2.0, 0.02, M.wardrobeDet); // door split centre
+box(-1.25, 1.1, -2.70, 0.29, 2.0, 0.02, M.wardrobeDet);
+box(-1.25, 1.1, -1.00, 0.29, 2.0, 0.02, M.wardrobeDet);
+
+// Small bookshelf
+box(1.20, 0.75, -2.5, 0.25, 1.5, 0.85, M.bedFrame);
+for (let si = 0; si < 3; si++) {
+  box(1.20, 0.22 + si * 0.45, -2.5, 0.24, 0.03, 0.8, M.wardrobeDet);
+}
+
+// ════ BATHROOM ════
+// X[1.5,4.0], Z[-3.5,-0.5]
+
+// Shower enclosure (north-east corner)
+// Glass panels: west panel at x=3.1, south panel at z=-2.2
+box(3.1, HWH, -2.9, 0.04, WH, 1.2, M.shower);     // west glass panel
+box(3.55, HWH, -2.25, 0.9, WH, 0.04, M.shower);    // south glass panel
+// Shower tray
+box(3.55, 0.04, -2.9, 0.9, 0.08, 1.2, M.showerBase);
+// Shower head
+box(3.92, 2.0, -2.9, 0.04, 0.04, 0.04, M.winFrame);
+box(3.92, 1.92, -2.9, 0.04, 0.20, 0.04, M.winFrame);
+box(3.82, 1.92, -2.9, 0.20, 0.04, 0.04, M.winFrame);
+
+// Toilet (west side)
+box(2.1, 0.24, -3.1, 0.40, 0.48, 0.60, M.toilet); // bowl
+box(2.1, 0.58, -3.42, 0.40, 0.18, 0.14, M.toilet); // tank
+
+// Vanity unit + sink (south wall of bathroom)
+box(2.0, 0.48, -0.72, 0.80, 0.95, 0.38, M.vanity); // cabinet
+box(2.0, 0.97, -0.70, 0.80, 0.04, 0.40, M.vanityTop); // counter
+// Basin
+box(2.0, 0.99, -0.70, 0.40, 0.04, 0.25, new THREE.MeshLambertMaterial({ color: 0xffffff }));
+
+// Mirror above vanity
+box(2.0, 1.55, -0.54, 0.72, 0.72, 0.02, M.mirror);
+// Mirror frame
+box(2.0, 1.55, -0.54, 0.76, 0.76, 0.025, new THREE.MeshLambertMaterial({ color: 0x888888 }));
+
+// Towel rail
+box(2.75, 1.1, -0.54, 0.5, 0.02, 0.02, M.winFrame);
+// Towel
+box(2.75, 1.1, -0.54, 0.42, 0.22, 0.04, new THREE.MeshLambertMaterial({ color: 0xdde8e8 }));
+
+// ════════════════════════════════════════════════════════════════
+//  ADDITIONAL STRUCTURAL & FURNITURE COLLISION
+// ════════════════════════════════════════════════════════════════
+
+// Entry hall south wall (z = 1.0, x: 4.0 to 5.5)
+addWB(4.00, 5.50, 0.94, 1.06);
+// West wall slab (x = -5.5) — caught by boundary but add explicit box too
+// East wall slab (x = 5.5) — boundary check handles this
+
+// Master bedroom wardrobe (x:-1.87 to -1.57, z:-3.25 to -0.75)
+addWB(-1.88, -1.56, -3.25, -0.75);
+// Master bedroom double bed (x:-4.4 to -2.6, z:-3.25 to -1.25)
+addWB(-4.42, -2.58, -3.30, -1.25);
+
+// Bedroom 2 wardrobe (x:-1.40 to -1.10, z:-2.80 to -0.90)
+addWB(-1.40, -1.10, -2.80, -0.92);
+// Bedroom 2 bed (x:-0.70 to 0.70, z:-3.30 to -1.50)
+addWB(-0.72,  0.72, -3.30, -1.50);
+
+// L-shaped sofa main section (x:-5.1 to -2.0, z:2.2 to 3.20)
+addWB(-5.15, -1.98, 2.18, 3.28);
+// Sofa L extension (x:-5.15 to -3.90, z:1.35 to 2.20)
+addWB(-5.15, -3.88, 1.33, 2.22);
+
+// Kitchen counters
+addWB( 1.48,  3.90,  3.00,  3.40); // south counter + upper cabs
+addWB( 3.58,  3.90,  1.30,  3.40); // L-counter east arm
+
+// Bathroom vanity + toilet (prevent walking through)
+addWB( 1.58,  2.45, -0.92, -0.50); // vanity cabinet
+addWB( 1.88,  2.35, -3.42, -2.75); // toilet
+
+// ════════════════════════════════════════════════════════════════
+//  COMPASS
+// ════════════════════════════════════════════════════════════════
+
+const compassCanvas = document.getElementById('compass-canvas');
+const compassCtx    = compassCanvas.getContext('2d');
+
+function drawCompass(heading) {
+  const w = 96, h = 96, cx = w/2, cy = h/2, r = 40;
+  compassCtx.clearRect(0, 0, w, h);
+
+  // Background
+  compassCtx.beginPath();
+  compassCtx.arc(cx, cy, r + 4, 0, Math.PI * 2);
+  compassCtx.fillStyle = 'rgba(10,14,26,0.7)';
+  compassCtx.fill();
+  compassCtx.strokeStyle = 'rgba(201,169,110,0.3)';
+  compassCtx.lineWidth = 1;
+  compassCtx.stroke();
+
+  // Cardinal marks
+  const cards = [['N', 0], ['E', 90], ['S', 180], ['O', 270]];
+  compassCtx.font = '9px Helvetica Neue, sans-serif';
+  compassCtx.textAlign = 'center';
+  compassCtx.textBaseline = 'middle';
+  for (const [label, deg] of cards) {
+    const a = (deg - heading) * Math.PI / 180 - Math.PI / 2;
+    const mx = cx + Math.cos(a) * (r - 8);
+    const my = cy + Math.sin(a) * (r - 8);
+    compassCtx.fillStyle = label === 'N' ? '#c9a96e' : 'rgba(255,255,255,0.5)';
+    compassCtx.fillText(label, mx, my);
+  }
+
+  // Needle
+  const na = -heading * Math.PI / 180 - Math.PI / 2;
+  // North needle (gold)
+  compassCtx.beginPath();
+  compassCtx.moveTo(cx, cy);
+  compassCtx.lineTo(cx + Math.cos(na) * (r - 18), cy + Math.sin(na) * (r - 18));
+  compassCtx.strokeStyle = '#c9a96e';
+  compassCtx.lineWidth = 2.5;
+  compassCtx.lineCap = 'round';
+  compassCtx.stroke();
+  // South needle (grey)
+  compassCtx.beginPath();
+  compassCtx.moveTo(cx, cy);
+  compassCtx.lineTo(cx - Math.cos(na) * (r - 24), cy - Math.sin(na) * (r - 24));
+  compassCtx.strokeStyle = 'rgba(255,255,255,0.3)';
+  compassCtx.lineWidth = 2;
+  compassCtx.stroke();
+
+  // Center dot
+  compassCtx.beginPath();
+  compassCtx.arc(cx, cy, 3, 0, Math.PI * 2);
+  compassCtx.fillStyle = '#c9a96e';
+  compassCtx.fill();
+}
+
+// ════════════════════════════════════════════════════════════════
+//  MOVEMENT & ANIMATION
+// ════════════════════════════════════════════════════════════════
+
+const clock  = new THREE.Clock();
+const moveV  = new THREE.Vector3();
+const camDir = new THREE.Vector3();
+const rightDir = new THREE.Vector3();
+const UP = new THREE.Vector3(0, 1, 0);
+
+let currentRoom = 'Entrada';
+let roomTransTimer = 0;
+
+// Fake "loading" bar animation
+let loadPct = 0;
+const loadBar = document.getElementById('loading-bar');
+const loadInterval = setInterval(() => {
+  loadPct = Math.min(100, loadPct + (Math.random() * 8 + 3));
+  loadBar.style.width = loadPct + '%';
+  if (loadPct >= 100) {
+    clearInterval(loadInterval);
+    startBtn.textContent = '▶  Click para comenzar';
+    startBtn.style.opacity = '1';
+  }
+}, 120);
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  const delta = Math.min(clock.getDelta(), 0.05); // cap at 50ms
+
+  if (controls.isLocked) {
+    const speed = 3.8;
+    const fw = (keys['KeyW'] || keys['ArrowUp'])    ? 1 : 0;
+    const bk = (keys['KeyS'] || keys['ArrowDown'])  ? 1 : 0;
+    const lf = (keys['KeyA'] || keys['ArrowLeft'])  ? 1 : 0;
+    const rt = (keys['KeyD'] || keys['ArrowRight']) ? 1 : 0;
+
+    if (fw || bk || lf || rt) {
+      camera.getWorldDirection(camDir);
+      camDir.y = 0;
+      camDir.normalize();
+      rightDir.crossVectors(camDir, UP).normalize();
+
+      moveV.set(0, 0, 0);
+      moveV.addScaledVector(camDir,  (fw - bk) * speed * delta);
+      moveV.addScaledVector(rightDir, (rt - lf) * speed * delta);
+
+      const oldX = camera.position.x;
+      const oldZ = camera.position.z;
+      const newX = oldX + moveV.x;
+      const newZ = oldZ + moveV.z;
+
+      // Attempt full move, then axis-by-axis fallback
+      if (isNavigable(newX, newZ)) {
+        camera.position.x = newX;
+        camera.position.z = newZ;
+      } else if (isNavigable(newX, oldZ)) {
+        camera.position.x = newX;
+      } else if (isNavigable(oldX, newZ)) {
+        camera.position.z = newZ;
+      }
+    }
+
+    // Lock height
+    camera.position.y = 1.65;
+
+    // Room detection
+    const room = detectRoom(camera.position.x, camera.position.z);
+    if (room !== currentRoom) {
+      currentRoom = room;
+      roomLabel.textContent = room;
+      roomLabel.style.opacity = '0';
+      setTimeout(() => { roomLabel.style.opacity = '1'; }, 50);
+    }
+
+    // Compass
+    const heading = -camera.rotation.y * 180 / Math.PI;
+    drawCompass(heading);
+  }
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+// ════════════════════════════════════════════════════════════════
+//  RESIZE
+// ════════════════════════════════════════════════════════════════
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+</script>
+</body>
+</html>
