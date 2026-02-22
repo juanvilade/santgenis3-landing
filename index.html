@@ -19,12 +19,16 @@ a:hover{color:var(--gold-light)}
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.2rem 2rem;display:flex;justify-content:space-between;align-items:center;transition:background .4s,box-shadow .4s}
 nav.scrolled{background:rgba(250,248,245,.97);box-shadow:0 1px 20px rgba(0,0,0,.06)}
-nav .logo{font-family:var(--font-heading);font-size:1.3rem;color:var(--charcoal);letter-spacing:.03em}
+nav .logo{font-family:var(--font-heading);font-size:1.3rem;color:var(--white);letter-spacing:.03em;transition:color .3s}
 nav .nav-links{display:flex;gap:2rem;list-style:none}
-nav .nav-links a{font-size:.85rem;font-weight:500;color:var(--charcoal);text-transform:uppercase;letter-spacing:.08em;transition:color .3s}
+nav .nav-links a{font-size:.85rem;font-weight:500;color:var(--white);text-transform:uppercase;letter-spacing:.08em;transition:color .3s}
 nav .nav-links a:hover{color:var(--gold)}
+nav.scrolled .logo{color:var(--charcoal)}
+nav.scrolled .nav-links a{color:var(--charcoal)}
+nav.scrolled .nav-links a:hover{color:var(--gold)}
+nav.scrolled .hamburger span{background:var(--charcoal)}
 .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none}
-.hamburger span{width:24px;height:2px;background:var(--charcoal);transition:transform .3s}
+.hamburger span{width:24px;height:2px;background:var(--white);transition:transform .3s,background .3s}
 
 /* HERO */
 .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(to bottom,rgba(30,30,30,.45),rgba(30,30,30,.55)),url('img/page01_img1.jpeg') center/cover no-repeat;color:var(--white);padding:2rem;position:relative;overflow:hidden}
@@ -200,7 +204,6 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
     <h2 class="section-title">Más que un edificio, un mirador tallado en la montaña</h2>
     <p class="section-text">Concebido como un bloque aislado a cuatro vientos y con orientación sur puro, el edificio respira sin medianeras. La luz inunda cada rincón: todas las viviendas son exteriores, con doble vista constante hacia Collserola y el horizonte de Barcelona hacia el mar.</p>
     <img src="img/page02_img1.jpeg" alt="Render exterior SantGenís3" style="width:100%;max-width:800px;margin:2.5rem auto;border-radius:2px">
-    <img src="img/crop_elevation.png" alt="Elevación arquitectónica SantGenís3" style="width:100%;max-width:1000px;margin:1rem auto;border-radius:2px">
     <div class="project-types">
       <div class="project-type">
         <h3>Garden Houses</h3>
