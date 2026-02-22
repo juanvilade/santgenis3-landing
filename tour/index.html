@@ -1821,18 +1821,20 @@ setTimeout(() => {
   ldStatus.style.opacity = '0';
 }, 900);
 
-ldBtn.addEventListener('click', () => {
+function beginTour() {
+  if (ldEl.classList.contains('fade-out')) return; // prevent double-fire
   ldEl.classList.add('fade-out');
   setTimeout(() => { ldEl.classList.add('gone'); }, 1300);
   if (isMobile) {
-    // Mobile: activate directly without pointer lock
     mobileActive = true;
     minimapEl.classList.add('on');
     hintEl.classList.add('on');
   } else {
     controls.lock();
   }
-});
+}
+ldBtn.addEventListener('click', beginTour);
+ldBtn.addEventListener('touchend', e => { e.preventDefault(); beginTour(); });
 
 // ESC pause behaviour (browser unlocks pointer — handled by controls.unlock event)
 window.addEventListener('keydown', e => {
