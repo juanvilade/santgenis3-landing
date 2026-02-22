@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SantGenís3 — Residencial Obra Nueva · Vall d'Hebron, Barcelona</title>
+<meta name="description" content="8 viviendas boutique en Sant Genís dels Agudells. Jardín, piscina, terraza y parking a 11 minutos en metro de Plaza Catalunya.">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--cream:#FAF8F5;--charcoal:#2C2C2C;--gold:#B8860B;--gold-light:#D4A843;--warm-gray:#8C8376;--light-gray:#E8E4DF;--white:#FFFFFF;--font-heading:'Playfair Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--cream);line-height:1.7;font-weight:300}
+h1,h2,h3,h4{font-family:var(--font-heading);font-weight:400;line-height:1.25}
+img{max-width:100%;display:block}
+a{color:var(--gold);text-decoration:none;transition:color .3s}
+a:hover{color:var(--gold-light)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.2rem 2rem;display:flex;justify-content:space-between;align-items:center;transition:background .4s,box-shadow .4s}
+nav.scrolled{background:rgba(250,248,245,.97);box-shadow:0 1px 20px rgba(0,0,0,.06)}
+nav .logo{font-family:var(--font-heading);font-size:1.3rem;color:var(--charcoal);letter-spacing:.03em}
+nav .nav-links{display:flex;gap:2rem;list-style:none}
+nav .nav-links a{font-size:.85rem;font-weight:500;color:var(--charcoal);text-transform:uppercase;letter-spacing:.08em;transition:color .3s}
+nav .nav-links a:hover{color:var(--gold)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none}
+.hamburger span{width:24px;height:2px;background:var(--charcoal);transition:transform .3s}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(160deg,#2C2C2C 0%,#4A3F35 40%,#6B5D4F 70%,#8C7B6A 100%);color:var(--white);padding:2rem;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to top,var(--cream),transparent)}
+.hero h1{font-size:clamp(3rem,8vw,6rem);margin-bottom:.5rem;letter-spacing:.04em}
+.hero .subtitle{font-size:clamp(1rem,2.5vw,1.4rem);font-weight:300;opacity:.85;margin-bottom:.5rem;letter-spacing:.15em;text-transform:uppercase}
+.hero .delivery{font-size:1rem;opacity:.65;margin-bottom:2.5rem;font-weight:300}
+.btn{display:inline-block;padding:.9rem 2.5rem;background:var(--gold);color:var(--white);font-family:var(--font-body);font-size:.9rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;transition:background .3s,transform .2s}
+.btn:hover{background:var(--gold-light);transform:translateY(-2px);color:var(--white)}
+
+/* SECTIONS */
+section{padding:6rem 2rem}
+.container{max-width:1100px;margin:0 auto}
+.section-label{font-size:.8rem;text-transform:uppercase;letter-spacing:.2em;color:var(--gold);margin-bottom:1rem;font-weight:500}
+.section-title{font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:1.5rem}
+.section-text{max-width:700px;color:var(--warm-gray);font-size:1.05rem}
+
+/* REVEAL ANIMATION */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* STORY */
+.story{background:var(--white)}
+.story .track-record{margin-top:2rem;display:flex;flex-wrap:wrap;gap:1rem}
+.story .track-record span{background:var(--cream);padding:.5rem 1rem;font-size:.85rem;color:var(--warm-gray);border-radius:2px}
+
+/* LOCATION */
+.location-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:2.5rem}
+.location-item{display:flex;gap:.8rem;align-items:baseline}
+.location-item .time{font-family:var(--font-heading);font-size:1.6rem;color:var(--gold);min-width:60px}
+.location-item .desc{font-size:.95rem;color:var(--warm-gray)}
+
+/* PROJECT */
+.project{background:var(--white)}
+.project-types{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3rem}
+.project-type{padding:2rem;background:var(--cream);border-top:3px solid var(--gold)}
+.project-type h3{font-size:1.3rem;margin-bottom:.8rem}
+.project-type p{font-size:.9rem;color:var(--warm-gray)}
+.project-type .highlight{font-family:var(--font-heading);font-size:1.1rem;color:var(--charcoal);margin-top:1rem}
+
+/* IMAGE PLACEHOLDER */
+.img-placeholder{background:linear-gradient(135deg,#D5CEC5,#BFB5A8);display:flex;align-items:center;justify-content:center;min-height:300px;color:var(--warm-gray);font-size:.9rem;font-style:italic;letter-spacing:.05em;margin:2.5rem 0;border-radius:2px}
+
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem 3rem;margin-top:2.5rem}
+.feature{padding:1rem 0;border-bottom:1px solid var(--light-gray)}
+.feature h4{font-size:1rem;margin-bottom:.3rem;font-family:var(--font-body);font-weight:600}
+.feature p{font-size:.9rem;color:var(--warm-gray)}
+
+/* PRICING */
+.pricing{background:var(--white)}
+.pricing-table{width:100%;border-collapse:collapse;margin-top:2.5rem}
+.pricing-table thead{background:var(--charcoal);color:var(--white)}
+.pricing-table th{padding:1rem 1.2rem;text-align:left;font-weight:500;font-size:.8rem;text-transform:uppercase;letter-spacing:.1em}
+.pricing-table td{padding:.9rem 1.2rem;border-bottom:1px solid var(--light-gray);font-size:.95rem}
+.pricing-table tr:hover td{background:rgba(184,134,11,.04)}
+.pricing-table .price{font-family:var(--font-heading);font-size:1.1rem;color:var(--gold)}
+.pricing-table .type-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--warm-gray);display:block;margin-top:.2rem}
+.pricing-note{margin-top:1rem;font-size:.8rem;color:var(--warm-gray);font-style:italic}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0;margin-top:2.5rem;position:relative}
+.timeline::before{content:'';position:absolute;left:8px;top:12px;bottom:12px;width:2px;background:var(--light-gray)}
+.timeline-item{display:flex;gap:2rem;padding:1.2rem 0;position:relative}
+.timeline-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--gold);background:var(--cream);flex-shrink:0;z-index:1}
+.timeline-item.done .timeline-dot{background:var(--gold)}
+.timeline-content .date{font-size:.85rem;color:var(--gold);font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.timeline-content .label{font-size:1rem;color:var(--charcoal);margin-top:.2rem}
+
+/* PAYMENT */
+.payment{background:var(--white)}
+.payment-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:2.5rem}
+.payment-step{text-align:center;padding:2rem 1rem;background:var(--cream)}
+.payment-step .pct{font-family:var(--font-heading);font-size:2.5rem;color:var(--gold)}
+.payment-step .desc{font-size:.85rem;color:var(--warm-gray);margin-top:.5rem}
+
+/* CONTACT */
+.contact{background:linear-gradient(160deg,#2C2C2C,#4A3F35);color:var(--white);text-align:center}
+.contact .section-title{color:var(--white)}
+.contact-info{display:flex;justify-content:center;gap:3rem;margin-top:2rem;flex-wrap:wrap}
+.contact-info a{color:var(--gold-light);font-size:1.1rem;font-weight:400}
+.contact form{max-width:500px;margin:2.5rem auto 0;display:flex;flex-direction:column;gap:1rem}
+.contact input,.contact textarea{padding:.9rem 1.2rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--white);font-family:var(--font-body);font-size:.95rem;outline:none;transition:border-color .3s}
+.contact input::placeholder,.contact textarea::placeholder{color:rgba(255,255,255,.4)}
+.contact input:focus,.contact textarea:focus{border-color:var(--gold)}
+.contact textarea{resize:vertical;min-height:100px}
+.contact .btn{width:100%;margin-top:.5rem}
+
+/* FOOTER */
+footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;padding:2rem;font-size:.75rem;line-height:1.8}
+
+/* MOBILE */
+@media(max-width:768px){
+  nav .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--cream);flex-direction:column;padding:1.5rem 2rem;gap:1.2rem;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+  nav .nav-links.open{display:flex}
+  .hamburger{display:flex}
+  .location-grid{grid-template-columns:1fr}
+  .project-types{grid-template-columns:1fr}
+  .features-grid{grid-template-columns:1fr}
+  .payment-steps{grid-template-columns:1fr 1fr}
+  .pricing-table{font-size:.85rem}
+  .pricing-table th,.pricing-table td{padding:.7rem .6rem}
+  section{padding:4rem 1.5rem}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="logo">Agudells Homes</div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#story">Historia</a></li>
+    <li><a href="#location">Ubicación</a></li>
+    <li><a href="#project">Proyecto</a></li>
+    <li><a href="#pricing">Precios</a></li>
+    <li><a href="#timeline">Hitos</a></li>
+    <li><a href="#contact">Contacto</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="subtitle">Residencial obra nueva · Vall d'Hebron, Barcelona</p>
+  <h1>SantGenís3</h1>
+  <p class="delivery">Entrega prevista 1T 2028</p>
+  <a href="#project" class="btn">Descubre tu hogar</a>
+</section>
+
+<!-- STORY -->
+<section class="story" id="story">
+  <div class="container reveal">
+    <p class="section-label">Agudells Homes</p>
+    <h2 class="section-title">Mil años entre las agujas de la montaña.<br>Cinco generaciones de compromiso.</h2>
+    <p class="section-text">«Agudells» deriva del diminutivo de «agulla»: las puntas afiladas de la sierra que protegen este valle. Cuando en el 931 se consagró la parroquia de Sant Genís, el acta registró 55 hogares y cinco masías: uno de los asentamientos más antiguos del llano de Barcelona, que durante siglos vivió del cultivo, alimentado por el agua de Collserola.</p>
+    <br>
+    <p class="section-text">Nuestra familia lleva cinco generaciones custodiando la finca que dio origen al barrio. Por eso fundamos Agudells Homes: porque nadie tiene más interés que nosotros en poner en valor Sant Genís como la joya única en Barcelona que siempre fue.</p>
+    <div class="track-record">
+      <span>Cànoves 8-10 (2002)</span>
+      <span>Cànoves 102 y 110 (2005-2007)</span>
+      <span>Modolell 33 (2010)</span>
+      <span>Villas Maresme (2008-2010)</span>
+      <span>Casa Vilá Reyes (2015)</span>
+      <span>Elies Pagès 35 (2024)</span>
+    </div>
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section id="location">
+  <div class="container reveal">
+    <p class="section-label">Ubicación</p>
+    <h2 class="section-title">Vive en un pueblo semipeatonal en plena Barcelona</h2>
+    <p class="section-text">Escondido a los pies de Collserola, Sant Genís dels Agudells es un pueblo milenario que la ciudad abrazó pero no transformó. Aire puro, calles silenciosas y una comunidad que se conoce — a minutos del centro.</p>
+    <div class="location-grid">
+      <div class="location-item"><span class="time">3'</span><span class="desc">Hospital Vall d'Hebron (coche)</span></div>
+      <div class="location-item"><span class="time">3'</span><span class="desc">Ronda de Dalt B-20 (coche)</span></div>
+      <div class="location-item"><span class="time">12'</span><span class="desc">Metro Montbau L3 (a pie)</span></div>
+      <div class="location-item"><span class="time">15'</span><span class="desc">Metro Vall d'Hebron L3/L5 (a pie)</span></div>
+      <div class="location-item"><span class="time">11'</span><span class="desc">Plaza Catalunya (metro)</span></div>
+      <div class="location-item"><span class="time">12'</span><span class="desc">Hospital Vall d'Hebron (a pie)</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECT -->
+<section class="project" id="project">
+  <div class="container reveal">
+    <p class="section-label">El proyecto</p>
+    <h2 class="section-title">Más que un edificio, un mirador tallado en la montaña</h2>
+    <p class="section-text">Concebido como un bloque aislado a cuatro vientos y con orientación sur puro, el edificio respira sin medianeras. La luz inunda cada rincón: todas las viviendas son exteriores, con doble vista constante hacia Collserola y el horizonte de Barcelona hacia el mar.</p>
+    <div class="img-placeholder">[ Render del edificio — vista exterior ]</div>
+    <div class="project-types">
+      <div class="project-type">
+        <h3>Garden Houses</h3>
+        <p>3 viviendas con jardín privado y piscina. Espacios exteriores de 50 a 150 m². Entre 2 y 4 habitaciones. Hogares concebidos como villas urbanas donde la amplitud fluye sin barreras hacia un oasis verde.</p>
+        <p class="highlight">Plantas 0 y 1 · Desde 450.000 €</p>
+      </div>
+      <div class="project-type">
+        <h3>Los Miradores</h3>
+        <p>4 viviendas pasantes de dos dormitorios con luminosidad excepcional. Terrazas privadas de 9-11 m² concebidas como miradores privilegiados suspendidos sobre el barrio.</p>
+        <p class="highlight">Plantas 2 y 3 · Desde 390.000 €</p>
+      </div>
+      <div class="project-type">
+        <h3>El Ático</h3>
+        <p>Vivienda única que redefine la libertad urbana. Inmensa terraza privada de casi 80 m² con jacuzzi. Vistas panorámicas infinitas sobre Barcelona. Privacidad absoluta.</p>
+        <p class="highlight">Planta 4 · 490.000 €</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container reveal">
+    <p class="section-label">Calidades</p>
+    <h2 class="section-title">Diseño, confort y eficiencia en cada detalle</h2>
+    <div class="features-grid">
+      <div class="feature"><h4>Fachada</h4><p>Ladrillo obra vista blanco con aislamiento térmico superior</p></div>
+      <div class="feature"><h4>Carpintería</h4><p>PVC con rotura de puente térmico y doble acristalamiento bajo emisivo</p></div>
+      <div class="feature"><h4>Persianas</h4><p>Motorizadas en todas las estancias principales</p></div>
+      <div class="feature"><h4>Pavimento</h4><p>Laminado AC5 en tonos roble claro, salón y dormitorios</p></div>
+      <div class="feature"><h4>Cocinas</h4><p>Alto grado de customización, muebles de diseño, encimeras porcelánicas</p></div>
+      <div class="feature"><h4>Baños</h4><p>Gres porcelánico gran formato, grifería termostática, primeras marcas</p></div>
+      <div class="feature"><h4>Climatización</h4><p>Aerotermia con suelo radiante refrescante</p></div>
+      <div class="feature"><h4>Parking</h4><p>9 plazas, hormigón pulido, ascensor directo, preinstalación recarga VE</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="container reveal">
+    <p class="section-label">Unidades en venta</p>
+    <h2 class="section-title">8 viviendas únicas</h2>
+    <table class="pricing-table">
+      <thead>
+        <tr><th>Unidad</th><th>m² interior</th><th>m² exterior</th><th>Precio</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Bajo <span class="type-label">Garden House</span></td><td>108</td><td>56</td><td class="price">550.000 €</td></tr>
+        <tr><td>Primero 1ª <span class="type-label">Garden House</span></td><td>68</td><td>68</td><td class="price">450.000 €</td></tr>
+        <tr><td>Primero 2ª <span class="type-label">Garden House</span></td><td>150</td><td>139</td><td class="price">750.000 €</td></tr>
+        <tr><td>Segundo 1ª <span class="type-label">Mirador</span></td><td>67</td><td>9</td><td class="price">390.000 €</td></tr>
+        <tr><td>Segundo 2ª <span class="type-label">Mirador</span></td><td>67</td><td>11</td><td class="price">390.000 €</td></tr>
+        <tr><td>Tercero 1ª <span class="type-label">Mirador</span></td><td>67</td><td>9</td><td class="price">390.000 €</td></tr>
+        <tr><td>Tercero 2ª <span class="type-label">Mirador</span></td><td>67</td><td>11</td><td class="price">390.000 €</td></tr>
+        <tr><td>Ático <span class="type-label">Ático</span></td><td>67</td><td>78</td><td class="price">490.000 €</td></tr>
+        <tr><td colspan="3">Aparcamiento (9 uds.) · Trastero (8 uds.)</td><td class="price">desde 25.000 €</td></tr>
+      </tbody>
+    </table>
+    <p class="pricing-note">Precios sin impuestos ni gastos. Vivienda: IVA 10% + AJD 1,5%. Anexos: tipo aplicable según adquisición. Gastos de notaría, registro y gestoría a cargo del comprador.</p>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline">
+  <div class="container reveal">
+    <p class="section-label">Hitos de obra</p>
+    <h2 class="section-title">Del plano a tu hogar</h2>
+    <div class="timeline">
+      <div class="timeline-item done"><div class="timeline-dot"></div><div class="timeline-content"><span class="date">Diciembre 2025</span><p class="label">Licencia de obras obtenida ✓</p></div></div>
+      <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><span class="date">Mayo — Julio 2026</span><p class="label">Derribo y excavación</p></div></div>
+      <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><span class="date">Septiembre — Diciembre 2026</span><p class="label">Cimentación y estructura</p></div></div>
+      <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><span class="date">Enero — Julio 2027</span><p class="label">Instalaciones y cerramientos</p></div></div>
+      <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><span class="date">Septiembre — Diciembre 2027</span><p class="label">Acabados</p></div></div>
+      <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><span class="date">1T 2028</span><p class="label">Entrega de llaves</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PAYMENT -->
+<section class="payment" id="payment">
+  <div class="container reveal">
+    <p class="section-label">Forma de pago</p>
+    <h2 class="section-title">Facilidades adaptadas a cada fase</h2>
+    <div class="payment-steps">
+      <div class="payment-step"><div class="pct">1%</div><div class="desc">Reserva</div></div>
+      <div class="payment-step"><div class="pct">9%</div><div class="desc">Contrato privado<br><small>(aval bancario)</small></div></div>
+      <div class="payment-step"><div class="pct">10%</div><div class="desc">Estructura alcanza PB<br><small>(aval bancario)</small></div></div>
+      <div class="payment-step"><div class="pct">80%</div><div class="desc">Escritura<br><small>(entrega de llaves)</small></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="container reveal">
+    <p class="section-label" style="color:var(--gold-light)">Contacto</p>
+    <h2 class="section-title">¿Hablamos?</h2>
+    <div class="contact-info">
+      <a href="tel:+34686595039">+34 686 595 039</a>
+      <a href="mailto:hola@santgenis3.com">hola@santgenis3.com</a>
+    </div>
+    <form onsubmit="event.preventDefault();alert('Gracias por tu interés. Te contactaremos pronto.')">
+      <input type="text" placeholder="Nombre" required>
+      <input type="email" placeholder="Email" required>
+      <input type="tel" placeholder="Teléfono">
+      <textarea placeholder="Mensaje"></textarea>
+      <button type="submit" class="btn">Enviar consulta</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Agudells Homes. Todos los derechos reservados.</p>
+  <p style="margin-top:.5rem;max-width:800px;margin-left:auto;margin-right:auto">El presente contenido tiene carácter meramente informativo y comercial, y no constituye oferta vinculante. Las superficies, calidades y plazos son orientativos y pueden sufrir modificaciones.</p>
+</footer>
+
+<script>
+// Nav scroll
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>50)});
+
+// Hamburger
+const hamburger=document.getElementById('hamburger');
+const navLinks=document.getElementById('navLinks');
+hamburger.addEventListener('click',()=>navLinks.classList.toggle('open'));
+navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>navLinks.classList.remove('open')));
+
+// Reveal on scroll
+const observer=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}})},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
