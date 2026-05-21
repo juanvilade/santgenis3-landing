@@ -73,9 +73,9 @@ Sub-sections:
 
 | Unidad | Tipo | m² int. | m² ext. | Precio |
 |--------|------|---------|---------|--------|
-| Bajo | Garden House | 108 | 56 | 550.000€ |
-| Primero 1ª | Garden House | 68 | 68 | 450.000€ |
-| Primero 2ª | Garden House | 150 | 139 | 750.000€ |
+| Bajo | Garden House | 108 | 56 | 590.000€ |
+| Primero 1ª | Garden House | 68 | 68 | 490.000€ |
+| Primero 2ª | Garden House | 150 | 139 | 790.000€ |
 | Segundo 1ª | Mirador | 67 | 9 | 390.000€ |
 | Segundo 2ª | Mirador | 67 | 11 | 390.000€ |
 | Tercero 1ª | Mirador | 67 | 9 | 390.000€ |
