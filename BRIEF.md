@@ -82,7 +82,7 @@ Sub-sections:
 | Tercero 2ª | Mirador | 67 | 11 | 390.000€ |
 | Ático | Ático | 67 | 78 | 490.000€ |
 | Parking | — | — | — | desde 25.000€ |
-| Trastero | — | — | — | desde 10.000€ |
+| Trastero | — | — | — | consultar |
 
 Note: "Precios sin impuestos ni gastos. Vivienda: IVA 10% + AJD 1,5%."
 
