@@ -66,7 +66,7 @@ Sub-sections:
 - Pavimento laminado AC5 roble claro
 - Cocinas customizables, encimeras porcelánicas
 - Baños gres porcelánico gran formato, grifería termostática
-- Aerotermia, suelo radiante, preinstalación punto recarga VE
+- Aerotermia, preinstalación punto recarga VE
 - Parking: 9 plazas, hormigón pulido, ascensor directo
 
 ### 6. Units & Pricing Table
