@@ -1,0 +1,12 @@
+{
+  "name": "santgenis3-landing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "nodemailer": "^8.0.3"
+  }
+}

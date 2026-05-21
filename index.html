@@ -313,12 +313,14 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
       <a href="tel:+34686595039">+34 686 595 039</a>
       <a href="mailto:hola@santgenis3.com">hola@santgenis3.com</a>
     </div>
-    <form onsubmit="event.preventDefault();alert('Gracias por tu interés. Te contactaremos pronto.')">
-      <input type="text" placeholder="Nombre" required>
-      <input type="email" placeholder="Email" required>
-      <input type="tel" placeholder="Teléfono">
-      <textarea placeholder="Mensaje"></textarea>
+    <form id="contactForm">
+      <input type="text" name="name" placeholder="Nombre" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="tel" name="phone" placeholder="Teléfono">
+      <input type="text" name="company" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;width:0;padding:0;border:0">
+      <textarea name="message" placeholder="Mensaje"></textarea>
       <button type="submit" class="btn">Enviar consulta</button>
+      <p id="contactStatus" style="min-height:1.4em;margin-top:.5rem;color:rgba(255,255,255,.75)"></p>
     </form>
   </div>
 </section>
@@ -342,6 +344,36 @@ navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>navLink
 // Reveal on scroll
 const observer=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}})},{threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// Contact form
+const contactForm=document.getElementById('contactForm');
+const contactStatus=document.getElementById('contactStatus');
+if(contactForm){
+  contactForm.addEventListener('submit',async(event)=>{
+    event.preventDefault();
+    const button=contactForm.querySelector('button[type="submit"]');
+    const originalText=button.textContent;
+    button.disabled=true;
+    button.textContent='Enviando...';
+    contactStatus.textContent='';
+    try{
+      const data=Object.fromEntries(new FormData(contactForm).entries());
+      const response=await fetch('/api/contact',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(data)
+      });
+      if(!response.ok) throw new Error('send failed');
+      contactForm.reset();
+      contactStatus.textContent='Gracias. Hemos recibido tu solicitud y te contactaremos pronto.';
+    }catch(error){
+      contactStatus.textContent='No se ha podido enviar. Escríbenos a hola@santgenis3.com o llama al +34 686 595 039.';
+    }finally{
+      button.disabled=false;
+      button.textContent=originalText;
+    }
+  });
+}
 </script>
 </body>
 </html>
