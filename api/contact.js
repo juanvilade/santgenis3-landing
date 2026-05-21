@@ -133,7 +133,10 @@ async function postLeadToCrm(data) {
 
   const authResponse = await fetch(`${crmUrl}/api/auth`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'Agudells Homes landing lead sync/1.0',
+    },
     body: JSON.stringify({ pin }),
     redirect: 'manual',
   });
@@ -169,6 +172,7 @@ async function postLeadToCrm(data) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'User-Agent': 'Agudells Homes landing lead sync/1.0',
       Cookie: cookie,
     },
     body: JSON.stringify(crmPayload),
