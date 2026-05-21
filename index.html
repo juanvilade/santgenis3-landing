@@ -365,7 +365,7 @@ if(contactForm){
       });
       if(!response.ok) throw new Error('send failed');
       contactForm.reset();
-      contactStatus.textContent='Gracias. Hemos recibido tu solicitud y te contactaremos pronto.';
+      contactStatus.textContent='Solicitud enviada. Te hemos enviado un email de confirmación y te contactaremos pronto.';
     }catch(error){
       contactStatus.textContent='No se ha podido enviar. Escríbenos a hola@santgenis3.com o llama al +34 686 595 039.';
     }finally{
