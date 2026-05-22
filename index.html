@@ -69,6 +69,17 @@ section{padding:6rem 2rem}
 .gallery-card figcaption{position:absolute;left:0;right:0;bottom:0;padding:1rem;background:linear-gradient(to top,rgba(0,0,0,.62),transparent);color:var(--white);font-size:.78rem;letter-spacing:.05em;text-transform:uppercase}
 .gallery-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.8rem}
 .gallery-strip .gallery-card{min-height:180px}
+.track-marquee{margin-top:2rem;overflow:hidden;position:relative;padding:.5rem 0}
+.track-marquee::before,.track-marquee::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
+.track-marquee::before{left:0;background:linear-gradient(to right,var(--white),transparent)}
+.track-marquee::after{right:0;background:linear-gradient(to left,var(--white),transparent)}
+.track-marquee-inner{display:flex;gap:1rem;width:max-content;animation:marquee 38s linear infinite}
+.track-marquee:hover .track-marquee-inner{animation-play-state:paused}
+.track-marquee-item{position:relative;flex:0 0 310px;height:180px;overflow:hidden;border-radius:2px;background:var(--light-gray);cursor:zoom-in}
+.track-marquee-item img{width:100%;height:100%;object-fit:cover;transition:transform .45s}
+.track-marquee-item:hover img{transform:scale(1.04)}
+.track-marquee-item span{position:absolute;left:0;right:0;bottom:0;padding:.7rem .9rem;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);color:var(--white);font-family:var(--font-heading);font-size:.95rem;letter-spacing:.08em;text-align:center}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
 /* PROJECT */
 .project{background:var(--white)}
@@ -201,11 +212,21 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
       <span>Casa Vilá Reyes (2015)</span>
       <span>Elies Pagès 35 (2024)</span>
     </div>
-    <div class="gallery-strip" aria-label="Promociones anteriores">
-      <figure class="gallery-card"><img src="img/promociones/promo_01_vivienda_historica.jpg" alt="Promoción anterior Agudells Homes" loading="lazy"><figcaption>Cànoves 8-10</figcaption></figure>
-      <figure class="gallery-card"><img src="img/promociones/promo_11_casa_jardin.jpg" alt="Can Ripoll" loading="lazy"><figcaption>Can Ripoll</figcaption></figure>
-      <figure class="gallery-card"><img src="img/promociones/promo_05_elies_pages.jpg" alt="Elies Pagès 35" loading="lazy"><figcaption>Elies Pagès 35</figcaption></figure>
-      <figure class="gallery-card"><img src="img/promociones/promo_15_edificio_residencial.jpg" alt="Promoción residencial anterior" loading="lazy"><figcaption>Trayectoria familiar</figcaption></figure>
+    <div class="track-marquee" aria-label="Promociones anteriores">
+      <div class="track-marquee-inner">
+        <div class="track-marquee-item"><img src="img/promociones/track_record_01.jpg" alt="Elies Pagès 35" loading="lazy"><span>Elies Pagès 35</span></div>
+        <div class="track-marquee-item"><img src="img/promociones/track_record_02.jpg" alt="Av. Regadiu 74" loading="lazy"><span>Av. Regadiu 74</span></div>
+        <div class="track-marquee-item"><img src="img/promociones/track_record_03.jpg" alt="Modolell 33" loading="lazy"><span>Modolell 33</span></div>
+        <div class="track-marquee-item"><img src="img/promociones/track_record_04.jpg" alt="Can Ripoll" loading="lazy"><span>Can Ripoll</span></div>
+        <div class="track-marquee-item"><img src="img/promociones/track_record_05.jpg" alt="Cànoves 8-10" loading="lazy"><span>Cànoves 8-10</span></div>
+        <div class="track-marquee-item"><img src="img/promociones/track_record_06.jpg" alt="Casa Vilá Reyes" loading="lazy"><span>Casa Vilá Reyes</span></div>
+        <div class="track-marquee-item"><img src="img/promociones/track_record_01.jpg" alt="Elies Pagès 35" loading="lazy"><span>Elies Pagès 35</span></div>
+        <div class="track-marquee-item"><img src="img/promociones/track_record_02.jpg" alt="Av. Regadiu 74" loading="lazy"><span>Av. Regadiu 74</span></div>
+        <div class="track-marquee-item"><img src="img/promociones/track_record_03.jpg" alt="Modolell 33" loading="lazy"><span>Modolell 33</span></div>
+        <div class="track-marquee-item"><img src="img/promociones/track_record_04.jpg" alt="Can Ripoll" loading="lazy"><span>Can Ripoll</span></div>
+        <div class="track-marquee-item"><img src="img/promociones/track_record_05.jpg" alt="Cànoves 8-10" loading="lazy"><span>Cànoves 8-10</span></div>
+        <div class="track-marquee-item"><img src="img/promociones/track_record_06.jpg" alt="Casa Vilá Reyes" loading="lazy"><span>Casa Vilá Reyes</span></div>
+      </div>
     </div>
   </div>
 </section>
@@ -401,6 +422,22 @@ document.querySelectorAll('.project-image').forEach(img=>{
   });
 });
 document.querySelectorAll('.gallery-card img').forEach(img=>{
+  img.addEventListener('click',()=>{
+    imageModalImg.src=img.src;
+    imageModalImg.alt=img.alt;
+    imageModal.classList.add('open');
+    imageModal.setAttribute('aria-hidden','false');
+  });
+});
+document.querySelectorAll('.gallery-image').forEach(img=>{
+  img.addEventListener('click',()=>{
+    imageModalImg.src=img.src;
+    imageModalImg.alt=img.alt;
+    imageModal.classList.add('open');
+    imageModal.setAttribute('aria-hidden','false');
+  });
+});
+document.querySelectorAll('.track-marquee-item img').forEach(img=>{
   img.addEventListener('click',()=>{
     imageModalImg.src=img.src;
     imageModalImg.alt=img.alt;
