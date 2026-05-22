@@ -61,6 +61,15 @@ section{padding:6rem 2rem}
 .location-item .time{font-family:var(--font-heading);font-size:1.6rem;color:var(--gold);min-width:60px}
 .location-item .desc{font-size:.95rem;color:var(--warm-gray)}
 
+/* GALLERIES */
+.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2.5rem}
+.gallery-card{position:relative;overflow:hidden;border-radius:2px;background:var(--light-gray);cursor:zoom-in;min-height:220px}
+.gallery-card img{width:100%;height:100%;object-fit:cover;transition:transform .45s,opacity .3s}
+.gallery-card:hover img{transform:scale(1.04);opacity:.95}
+.gallery-card figcaption{position:absolute;left:0;right:0;bottom:0;padding:1rem;background:linear-gradient(to top,rgba(0,0,0,.62),transparent);color:var(--white);font-size:.78rem;letter-spacing:.05em;text-transform:uppercase}
+.gallery-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.8rem}
+.gallery-strip .gallery-card{min-height:180px}
+
 /* PROJECT */
 .project{background:var(--white)}
 .project-types{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3rem}
@@ -133,6 +142,7 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
   nav .nav-links.open{display:flex}
   .hamburger{display:flex}
   .location-grid{grid-template-columns:1fr}
+  .gallery-grid,.gallery-strip{grid-template-columns:1fr 1fr}
   .project-types{grid-template-columns:1fr}
   .features-grid{grid-template-columns:1fr}
   .payment-steps{grid-template-columns:1fr 1fr}
@@ -141,6 +151,7 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
   .project-image.compact{max-height:none}
   section{padding:4rem 1.5rem}
 }
+@media(max-width:520px){.gallery-grid,.gallery-strip{grid-template-columns:1fr}}
 </style>
 
 <!-- Vercel Web Analytics -->
@@ -190,6 +201,12 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
       <span>Casa Vilá Reyes (2015)</span>
       <span>Elies Pagès 35 (2024)</span>
     </div>
+    <div class="gallery-strip" aria-label="Promociones anteriores">
+      <figure class="gallery-card"><img src="img/promociones/promo_01_vivienda_historica.jpg" alt="Promoción anterior Agudells Homes" loading="lazy"><figcaption>Cànoves 8-10</figcaption></figure>
+      <figure class="gallery-card"><img src="img/promociones/promo_11_casa_jardin.jpg" alt="Promoción anterior con jardín" loading="lazy"><figcaption>Casa Vilá Reyes</figcaption></figure>
+      <figure class="gallery-card"><img src="img/promociones/promo_05_elies_pages.jpg" alt="Elies Pagès 35" loading="lazy"><figcaption>Elies Pagès 35</figcaption></figure>
+      <figure class="gallery-card"><img src="img/promociones/promo_15_edificio_residencial.jpg" alt="Promoción residencial anterior" loading="lazy"><figcaption>Trayectoria familiar</figcaption></figure>
+    </div>
   </div>
 </section>
 
@@ -199,6 +216,12 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
     <p class="section-label">Ubicación</p>
     <h2 class="section-title">Vive en un pueblo semipeatonal en plena Barcelona</h2>
     <p class="section-text">En C/ Costa Pacheco 6-8, a los pies de Collserola, Sant Genís dels Agudells conserva la escala de un pueblo milenario que la ciudad abrazó pero no transformó. Aire puro, calles silenciosas y una comunidad que se conoce — a minutos del centro.</p>
+    <div class="gallery-grid" aria-label="Fotos de Sant Genís y Collserola">
+      <figure class="gallery-card"><img src="img/barrio/barrio_01_iglesia_sant_genis.jpg" alt="Iglesia de Sant Genís dels Agudells" loading="lazy"><figcaption>Núcleo histórico</figcaption></figure>
+      <figure class="gallery-card"><img src="img/barrio/barrio_09_calle_barrio.jpg" alt="Calle tranquila de Sant Genís" loading="lazy"><figcaption>Escala de barrio</figcaption></figure>
+      <figure class="gallery-card"><img src="img/barrio/barrio_03_entorno_verde_collserola.jpg" alt="Entorno verde de Collserola" loading="lazy"><figcaption>Collserola</figcaption></figure>
+      <figure class="gallery-card"><img src="img/barrio/barrio_07_panoramica_barrio_montana.jpg" alt="Panorámica de Sant Genís y Barcelona" loading="lazy"><figcaption>Barcelona a tus pies</figcaption></figure>
+    </div>
     <img src="img/page03_img1.jpeg" alt="Mapa ubicación Sant Genís" style="width:100%;max-width:800px;margin:2rem auto;border-radius:2px">
     <div class="location-grid">
       <div class="location-item"><span class="time">3'</span><span class="desc">Hospital Vall d'Hebron (coche)</span></div>
@@ -370,6 +393,14 @@ const imageModal=document.getElementById('imageModal');
 const imageModalImg=document.getElementById('imageModalImg');
 const imageModalClose=document.getElementById('imageModalClose');
 document.querySelectorAll('.project-image').forEach(img=>{
+  img.addEventListener('click',()=>{
+    imageModalImg.src=img.src;
+    imageModalImg.alt=img.alt;
+    imageModal.classList.add('open');
+    imageModal.setAttribute('aria-hidden','false');
+  });
+});
+document.querySelectorAll('.gallery-card img').forEach(img=>{
   img.addEventListener('click',()=>{
     imageModalImg.src=img.src;
     imageModalImg.alt=img.alt;
