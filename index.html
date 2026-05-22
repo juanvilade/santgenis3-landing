@@ -68,6 +68,13 @@ section{padding:6rem 2rem}
 .project-type h3{font-size:1.3rem;margin-bottom:.8rem}
 .project-type p{font-size:.9rem;color:var(--warm-gray)}
 .project-type .highlight{font-family:var(--font-heading);font-size:1.1rem;color:var(--charcoal);margin-top:1rem}
+.project-image{width:100%;margin-top:1rem;border-radius:2px;cursor:zoom-in;transition:opacity .25s,transform .25s}
+.project-image:hover{opacity:.92;transform:translateY(-2px)}
+.project-image.compact{max-height:210px;object-fit:contain;background:rgba(255,255,255,.45);padding:.4rem}
+.image-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;background:rgba(20,20,20,.86);padding:2rem;cursor:zoom-out}
+.image-modal.open{display:flex}
+.image-modal img{max-width:94vw;max-height:90vh;border-radius:3px;background:var(--cream);box-shadow:0 18px 60px rgba(0,0,0,.35)}
+.image-modal button{position:absolute;top:1rem;right:1.2rem;background:none;border:none;color:var(--white);font-size:2rem;line-height:1;cursor:pointer}
 
 /* IMAGE PLACEHOLDER */
 .img-placeholder{background:linear-gradient(135deg,#D5CEC5,#BFB5A8);display:flex;align-items:center;justify-content:center;min-height:300px;color:var(--warm-gray);font-size:.9rem;font-style:italic;letter-spacing:.05em;margin:2.5rem 0;border-radius:2px}
@@ -131,6 +138,7 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
   .payment-steps{grid-template-columns:1fr 1fr}
   .pricing-table{font-size:.85rem}
   .pricing-table th,.pricing-table td{padding:.7rem .6rem}
+  .project-image.compact{max-height:none}
   section{padding:4rem 1.5rem}
 }
 </style>
@@ -215,20 +223,20 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
         <h3>Garden Houses</h3>
         <p>3 viviendas con jardín privado y piscina. Espacios exteriores de 50 a 150 m². Entre 2 y 4 habitaciones. Hogares concebidos como villas urbanas donde la amplitud fluye sin barreras hacia un oasis verde.</p>
         <p class="highlight">Plantas 0 y 1 · Desde 490.000 €</p>
-        <img src="img/render_garden_houses_new.jpg" alt="Planta Garden House" style="width:100%;margin-top:1rem;border-radius:2px">
+        <img src="img/render_garden_houses_new.jpg" alt="Planta Garden House" class="project-image compact" loading="lazy">
       </div>
       <div class="project-type">
         <h3>Los Miradores</h3>
-        <p>4 viviendas pasantes de dos dormitorios con luminosidad excepcional. Terrazas privadas de 9-11 m² concebidas como miradores privilegiados suspendidos sobre el barrio. Posibilidad de unir dos viviendas al mismo nivel para obtener una vivienda de 150 m² y 5 habitaciones.</p>
+        <p>4 viviendas pasantes de dos dormitorios con luminosidad excepcional. Terrazas privadas de 9-11 m². Posibilidad de unir dos viviendas al mismo nivel para obtener una vivienda de 150 m² y 5 habitaciones.</p>
         <p class="highlight">Plantas 2 y 3 · Desde 390.000 € (2hab) o 730.000 € (5hab)</p>
-        <img src="img/render_miradores_new.jpg" alt="Planta Miradores independientes" style="width:100%;margin-top:1rem;border-radius:2px">
-        <img src="img/render_miradores_unidos.jpg" alt="Planta Miradores unidos" style="width:100%;margin-top:.8rem;border-radius:2px">
+        <img src="img/render_miradores_new.jpg" alt="Planta Miradores independientes" class="project-image compact" loading="lazy">
+        <img src="img/render_miradores_unidos.jpg" alt="Planta Miradores unidos" class="project-image compact" loading="lazy">
       </div>
       <div class="project-type">
         <h3>El Ático</h3>
         <p>Vivienda única que redefine la libertad urbana. Inmensa terraza privada de casi 80 m² con jacuzzi. Vistas panorámicas infinitas sobre Barcelona. Privacidad absoluta.</p>
         <p class="highlight">Planta 4 · 490.000 €</p>
-        <img src="img/render_atico_new.jpg" alt="Planta Ático" style="width:100%;margin-top:1rem;border-radius:2px">
+        <img src="img/render_atico_new.jpg" alt="Planta Ático" class="project-image compact" loading="lazy">
       </div>
     </div>
   </div>
@@ -338,6 +346,11 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
   <p style="margin-top:.5rem;max-width:800px;margin-left:auto;margin-right:auto">El presente contenido tiene carácter meramente informativo y comercial, y no constituye oferta vinculante. Las superficies, calidades y plazos son orientativos y pueden sufrir modificaciones.</p>
 </footer>
 
+<div class="image-modal" id="imageModal" aria-hidden="true">
+  <button type="button" id="imageModalClose" aria-label="Cerrar imagen ampliada">×</button>
+  <img id="imageModalImg" src="" alt="">
+</div>
+
 <script>
 // Nav scroll
 const nav=document.getElementById('nav');
@@ -352,6 +365,27 @@ navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>navLink
 // Reveal on scroll
 const observer=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}})},{threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// Expand project images
+const imageModal=document.getElementById('imageModal');
+const imageModalImg=document.getElementById('imageModalImg');
+const imageModalClose=document.getElementById('imageModalClose');
+document.querySelectorAll('.project-image').forEach(img=>{
+  img.addEventListener('click',()=>{
+    imageModalImg.src=img.src;
+    imageModalImg.alt=img.alt;
+    imageModal.classList.add('open');
+    imageModal.setAttribute('aria-hidden','false');
+  });
+});
+function closeImageModal(){
+  imageModal.classList.remove('open');
+  imageModal.setAttribute('aria-hidden','true');
+  imageModalImg.src='';
+}
+imageModal.addEventListener('click',(event)=>{if(event.target===imageModal) closeImageModal()});
+imageModalClose.addEventListener('click',closeImageModal);
+document.addEventListener('keydown',(event)=>{if(event.key==='Escape'&&imageModal.classList.contains('open')) closeImageModal()});
 
 // Contact form
 const contactForm=document.getElementById('contactForm');
