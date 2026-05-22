@@ -67,6 +67,7 @@ section{padding:6rem 2rem}
 .gallery-card img{width:100%;height:100%;object-fit:cover;transition:transform .45s,opacity .3s}
 .gallery-card:hover img{transform:scale(1.04);opacity:.95}
 .gallery-card figcaption{position:absolute;left:0;right:0;bottom:0;padding:1rem;background:linear-gradient(to top,rgba(0,0,0,.62),transparent);color:var(--white);font-size:.78rem;letter-spacing:.05em;text-transform:uppercase}
+.neighborhood-grid{grid-template-columns:repeat(3,1fr)}
 .gallery-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.8rem}
 .gallery-strip .gallery-card{min-height:180px}
 .track-marquee{margin-top:2rem;overflow:hidden;position:relative;padding:.5rem 0}
@@ -237,11 +238,13 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
     <p class="section-label">Ubicación</p>
     <h2 class="section-title">Vive en un pueblo semipeatonal en plena Barcelona</h2>
     <p class="section-text">En C/ Costa Pacheco 6-8, a los pies de Collserola, Sant Genís dels Agudells conserva la escala de un pueblo milenario que la ciudad abrazó pero no transformó. Aire puro, calles silenciosas y una comunidad que se conoce — a minutos del centro.</p>
-    <div class="gallery-grid" aria-label="Fotos de Sant Genís y Collserola">
-      <figure class="gallery-card"><img src="img/barrio/barrio_01_iglesia_sant_genis.jpg" alt="Iglesia de Sant Genís dels Agudells" loading="lazy"><figcaption>Núcleo histórico</figcaption></figure>
-      <figure class="gallery-card"><img src="img/barrio/barrio_09_calle_barrio.jpg" alt="Calle tranquila de Sant Genís" loading="lazy"><figcaption>Escala de barrio</figcaption></figure>
-      <figure class="gallery-card"><img src="img/barrio/barrio_03_entorno_verde_collserola.jpg" alt="Entorno verde de Collserola" loading="lazy"><figcaption>Collserola</figcaption></figure>
-      <figure class="gallery-card"><img src="img/barrio/barrio_07_panoramica_barrio_montana.jpg" alt="Panorámica de Sant Genís y Barcelona" loading="lazy"><figcaption>Barcelona a tus pies</figcaption></figure>
+    <div class="gallery-grid neighborhood-grid" aria-label="Fotos de Sant Genís y Collserola">
+      <figure class="gallery-card"><img src="img/barrio/barrio_correcta_01_nucleo_historico.jpg" alt="Iglesia de Sant Genís dels Agudells y Collserola" loading="lazy"><figcaption>Núcleo histórico</figcaption></figure>
+      <figure class="gallery-card"><img src="img/barrio/barrio_correcta_02_masias_huertos.jpg" alt="Masías y huertos en Sant Genís" loading="lazy"><figcaption>Masías y huertos</figcaption></figure>
+      <figure class="gallery-card"><img src="img/barrio/barrio_correcta_03_barcelona_collserola.jpg" alt="Vistas de Barcelona desde Sant Genís" loading="lazy"><figcaption>Barcelona a tus pies</figcaption></figure>
+      <figure class="gallery-card"><img src="img/barrio/barrio_correcta_04_equipamientos.jpg" alt="Equipamientos junto a Collserola" loading="lazy"><figcaption>Equipamientos próximos</figcaption></figure>
+      <figure class="gallery-card"><img src="img/barrio/barrio_correcta_05_vall_hebron.jpg" alt="Hospital Vall d'Hebron" loading="lazy"><figcaption>Vall d'Hebron</figcaption></figure>
+      <figure class="gallery-card"><img src="img/barrio/barrio_correcta_06_metro_l3.jpg" alt="Metro Vall d'Hebron L3" loading="lazy"><figcaption>Metro L3 / L5</figcaption></figure>
     </div>
     <img src="img/page03_img1.jpeg" alt="Mapa ubicación Sant Genís" style="width:100%;max-width:800px;margin:2rem auto;border-radius:2px">
     <div class="location-grid">
