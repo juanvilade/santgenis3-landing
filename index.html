@@ -65,14 +65,14 @@ section{padding:6rem 2rem}
 .gallery-card img{width:100%;height:100%;object-fit:cover;transition:transform .45s,opacity .3s}
 .gallery-card:hover img{transform:scale(1.04);opacity:.95}
 .gallery-card figcaption{position:absolute;left:0;right:0;bottom:0;padding:1rem;background:linear-gradient(to top,rgba(0,0,0,.62),transparent);color:var(--white);font-size:.78rem;letter-spacing:.05em;text-transform:uppercase}
-.location-marquee{max-width:800px;margin:2.5rem auto 0}
+.location-marquee{max-width:800px;margin:2.5rem auto 0;--marquee-speed:5}
 .location-marquee.track-marquee::before{background:linear-gradient(to right,var(--cream),transparent)}
 .location-marquee.track-marquee::after{background:linear-gradient(to left,var(--cream),transparent)}
 .location-map{width:100%;max-width:800px;margin:2rem auto;border-radius:2px}
 .gallery-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.8rem}
 .gallery-strip .gallery-card{min-height:180px}
-.track-marquee{margin-top:2rem;overflow:hidden;position:relative;padding:.5rem 0;cursor:grab;touch-action:pan-y;user-select:none}
-.track-marquee::before,.track-marquee::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
+.track-marquee{margin-top:2rem;overflow:hidden;position:relative;padding:.5rem 0;cursor:grab;touch-action:pan-y;user-select:none;--fade-width:80px;--marquee-speed:10}
+.track-marquee::before,.track-marquee::after{content:'';position:absolute;top:0;bottom:0;width:var(--fade-width);z-index:2;pointer-events:none}
 .track-marquee::before{left:0;background:linear-gradient(to right,var(--white),transparent)}
 .track-marquee::after{right:0;background:linear-gradient(to left,var(--white),transparent)}
 .track-marquee-inner{display:flex;gap:1rem;width:max-content;animation:marquee 96s linear infinite;will-change:transform}
@@ -166,7 +166,7 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
   .project-image.compact{max-height:none}
   section{padding:4rem 1.5rem}
 }
-@media(max-width:520px){.gallery-grid,.gallery-strip{grid-template-columns:1fr}}
+@media(max-width:520px){.gallery-grid,.gallery-strip{grid-template-columns:1fr}.track-marquee{--fade-width:22px}.track-marquee-item{flex-basis:76vw;height:170px}}
 </style>
 
 <!-- Vercel Web Analytics -->
@@ -445,8 +445,8 @@ document.querySelectorAll('.gallery-image').forEach(img=>{
 });
 function initMarquees(){
   const marquees=[...document.querySelectorAll('.track-marquee')];
-  const SPEED=18; // px/s: ~3x más lento que la versión CSS previa
   marquees.forEach((marquee)=>{
+    const speed=parseFloat(getComputedStyle(marquee).getPropertyValue('--marquee-speed')) || 10;
     const inner=marquee.querySelector('.track-marquee-inner');
     if(!inner) return;
     let cycleWidth=0;
@@ -473,7 +473,7 @@ function initMarquees(){
       const dt=Math.min((now-last)/1000,.08);
       last=now;
       if(!dragging){
-        offset=wrap(offset + SPEED*dt);
+        offset=wrap(offset + speed*dt);
         apply();
       }
       requestAnimationFrame(tick);
