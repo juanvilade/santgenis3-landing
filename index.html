@@ -71,12 +71,14 @@ section{padding:6rem 2rem}
 .location-map{width:100%;max-width:800px;margin:2rem auto;border-radius:2px}
 .gallery-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.8rem}
 .gallery-strip .gallery-card{min-height:180px}
-.track-marquee{margin-top:2rem;overflow:hidden;position:relative;padding:.5rem 0}
+.track-marquee{margin-top:2rem;overflow:hidden;position:relative;padding:.5rem 0;cursor:grab;touch-action:pan-y;user-select:none}
 .track-marquee::before,.track-marquee::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
 .track-marquee::before{left:0;background:linear-gradient(to right,var(--white),transparent)}
 .track-marquee::after{right:0;background:linear-gradient(to left,var(--white),transparent)}
-.track-marquee-inner{display:flex;gap:1rem;width:max-content;animation:marquee 38s linear infinite}
-.track-marquee:hover .track-marquee-inner{animation-play-state:paused}
+.track-marquee-inner{display:flex;gap:1rem;width:max-content;animation:marquee 96s linear infinite;will-change:transform}
+.track-marquee.is-dragging{cursor:grabbing}
+.track-marquee.is-dragging .track-marquee-inner{animation-play-state:paused}
+.track-marquee.is-dragging .track-marquee-item{cursor:grabbing}
 .track-marquee-item{position:relative;flex:0 0 310px;height:180px;overflow:hidden;border-radius:2px;background:var(--light-gray);cursor:zoom-in}
 .track-marquee-item img{width:100%;height:100%;object-fit:cover;transition:transform .45s}
 .track-marquee-item:hover img{transform:scale(1.04)}
@@ -441,8 +443,86 @@ document.querySelectorAll('.gallery-image').forEach(img=>{
     imageModal.setAttribute('aria-hidden','false');
   });
 });
+function initMarquees(){
+  const marquees=[...document.querySelectorAll('.track-marquee')];
+  const SPEED=18; // px/s: ~3x más lento que la versión CSS previa
+  marquees.forEach((marquee)=>{
+    const inner=marquee.querySelector('.track-marquee-inner');
+    if(!inner) return;
+    let cycleWidth=0;
+    let offset=0;
+    let last=performance.now();
+    let dragging=false;
+    let moved=false;
+    let startX=0;
+    let lastX=0;
+
+    function measure(){ cycleWidth=inner.scrollWidth/2; }
+    function wrap(value){
+      if(!cycleWidth) return 0;
+      value%=cycleWidth;
+      if(value<0) value+=cycleWidth;
+      return value;
+    }
+    function apply(){ inner.style.transform=`translate3d(${-offset}px,0,0)`; }
+    function tick(now){
+      const dt=Math.min((now-last)/1000,.08);
+      last=now;
+      if(!dragging){
+        offset=wrap(offset + SPEED*dt);
+        apply();
+      }
+      requestAnimationFrame(tick);
+    }
+
+    measure();
+    inner.style.animation='none';
+    window.addEventListener('resize',()=>{ measure(); offset=wrap(offset); apply(); });
+
+    marquee.addEventListener('pointerdown',(event)=>{
+      if(event.button!==undefined && event.button!==0) return;
+      dragging=true;
+      moved=false;
+      startX=lastX=event.clientX;
+      marquee.classList.add('is-dragging');
+      marquee.dataset.dragged='0';
+      marquee.setPointerCapture?.(event.pointerId);
+      last=performance.now();
+    });
+    marquee.addEventListener('pointermove',(event)=>{
+      if(!dragging) return;
+      const dx=event.clientX-lastX;
+      if(Math.abs(event.clientX-startX)>6) moved=true;
+      offset=wrap(offset - dx);
+      lastX=event.clientX;
+      apply();
+    });
+    function endDrag(event){
+      if(!dragging) return;
+      dragging=false;
+      marquee.classList.remove('is-dragging');
+      marquee.dataset.dragged=moved?'1':'0';
+      marquee.releasePointerCapture?.(event.pointerId);
+      setTimeout(()=>{ marquee.dataset.dragged='0'; },80);
+      last=performance.now();
+    }
+    marquee.addEventListener('pointerup',endDrag);
+    marquee.addEventListener('pointercancel',endDrag);
+    marquee.addEventListener('pointerleave',(event)=>{ if(dragging) endDrag(event); });
+
+    requestAnimationFrame(tick);
+  });
+}
+initMarquees();
+
 document.querySelectorAll('.track-marquee-item img').forEach(img=>{
-  img.addEventListener('click',()=>{
+  img.addEventListener('click',(event)=>{
+    const marquee=img.closest('.track-marquee');
+    if(marquee?.dataset.dragged==='1'){
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
     imageModalImg.src=img.src;
     imageModalImg.alt=img.alt;
     imageModal.classList.add('open');
