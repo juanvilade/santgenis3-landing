@@ -88,9 +88,9 @@ Note: "Precios sin impuestos ni gastos. Vivienda: IVA 10% + AJD 1,5%."
 
 ### 7. Timeline
 - Dic 2025: Licencia ✅
-- May-Jul 2026: Derribo y excavación
-- Sep-Dic 2026: Cimentación y estructura
-- Ene-Jul 2027: Instalaciones y cerramientos
+- Jun-Sep 2026: Derribo y excavación
+- Oct 2026-Ene 2027: Cimentación y estructura
+- Feb-Jul 2027: Instalaciones y cerramientos
 - Sep-Dic 2027: Acabados
 - 1T 2028: Entrega de llaves
 
