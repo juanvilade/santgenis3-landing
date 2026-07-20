@@ -31,8 +31,11 @@ nav.scrolled .hamburger span{background:var(--charcoal)}
 .hamburger span{width:24px;height:2px;background:var(--white);transition:transform .3s,background .3s}
 
 /* HERO */
-.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(to bottom,rgba(30,30,30,.45),rgba(30,30,30,.55)),url('img/page01_img1.jpeg') center/cover no-repeat;color:var(--white);padding:2rem;position:relative;overflow:hidden}
-.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to top,var(--cream),transparent)}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:url('video/sg3-hero-poster.jpeg') center/cover no-repeat;color:var(--white);padding:2rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(30,30,30,.4),rgba(30,30,30,.58))}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;z-index:2;height:120px;background:linear-gradient(to top,var(--cream),transparent)}
+.hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0}
+.hero>*:not(.hero-video){position:relative;z-index:3}
 .hero h1{font-size:clamp(3rem,8vw,6rem);margin-bottom:.5rem;letter-spacing:.04em}
 .hero .subtitle{font-size:clamp(1rem,2.5vw,1.4rem);font-weight:300;opacity:.85;margin-bottom:.5rem;letter-spacing:.15em;text-transform:uppercase}
 .hero .delivery{font-size:1rem;opacity:.65;margin-bottom:2.5rem;font-weight:300}
@@ -52,6 +55,12 @@ section{padding:6rem 2rem}
 
 /* STORY */
 .story{background:var(--white)}
+
+/* VIDEO */
+.video-section{background:var(--cream)}
+.video-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,1.7fr);gap:3rem;align-items:center;margin-top:2.5rem}
+.video-copy{align-self:start}
+.video-player{width:100%;aspect-ratio:16/9;display:block;background:var(--charcoal);border-radius:2px;box-shadow:0 18px 45px rgba(44,44,44,.18)}
 
 /* LOCATION */
 .location-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:2.5rem}
@@ -157,6 +166,7 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
   nav .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--cream);flex-direction:column;padding:1.5rem 2rem;gap:1.2rem;box-shadow:0 4px 20px rgba(0,0,0,.08)}
   nav .nav-links.open{display:flex}
   .hamburger{display:flex}
+  .video-layout{grid-template-columns:1fr;gap:1.5rem}
   .location-grid{grid-template-columns:1fr}
   .gallery-grid,.gallery-strip{grid-template-columns:1fr 1fr}
   .project-types{grid-template-columns:1fr}
@@ -182,6 +192,7 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
   <div class="logo">Agudells Homes</div>
   <ul class="nav-links" id="navLinks">
     <li><a href="#story">Historia</a></li>
+    <li><a href="#video">Vídeo</a></li>
     <li><a href="#location">Ubicación</a></li>
     <li><a href="#project">Proyecto</a></li>
     <li><a href="#pricing">Precios</a></li>
@@ -195,6 +206,9 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
 
 <!-- HERO -->
 <section class="hero">
+  <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="video/sg3-hero-poster.jpeg" aria-hidden="true">
+    <source src="video/sg3-hero-tour.mp4" type="video/mp4">
+  </video>
   <p class="subtitle">Promoción boutique de solo 8 viviendas · C/ Costa Pacheco 6-8</p>
   <h1>SantGenís3</h1>
   <p class="delivery">Obra nueva en Vall d'Hebron, Barcelona · Entrega prevista 1T 2028</p>
@@ -224,6 +238,22 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
         <div class="track-marquee-item"><img src="img/promociones/track_record_canoves_8_10.jpg" alt="Cànoves 8-10" loading="eager" decoding="async"><span>Cànoves 8-10</span></div>
         <div class="track-marquee-item"><img src="img/promociones/track_record_casa_vila_reyes.jpg" alt="Casa Vilá Reyes" loading="eager" decoding="async"><span>Casa Vilá Reyes</span></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO -->
+<section class="video-section" id="video">
+  <div class="container reveal">
+    <div class="video-layout">
+      <div class="video-copy">
+        <p class="section-label">Vídeo</p>
+        <h2 class="section-title">Recorre SantGenís3</h2>
+        <p class="section-text">Una vista completa del edificio, las viviendas y su relación con Collserola y Barcelona.</p>
+      </div>
+      <video class="video-player" controls playsinline preload="metadata" poster="video/sg3-hero-poster.jpeg">
+        <source src="video/sg3-hero-tour.mp4" type="video/mp4">
+      </video>
     </div>
   </div>
 </section>
