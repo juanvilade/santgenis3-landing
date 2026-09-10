@@ -73,16 +73,16 @@ Sub-sections:
 
 | Unidad | Tipo | m² int. | m² ext. | Precio |
 |--------|------|---------|---------|--------|
-| Bajo | Garden House | 108 | 56 | 590.000€ |
+| Bajo (incluye trastero 10) | Garden House | 108 | 56 | 590.000€ |
 | Primero 1ª | Garden House | 68 | 68 | 490.000€ |
-| Primero 2ª | Garden House | 150 | 139 | 790.000€ |
-| Segundo 1ª | Mirador | 67 | 9 | 390.000€ |
-| Segundo 2ª | Mirador | 67 | 11 | 390.000€ |
-| Tercero 1ª | Mirador | 67 | 9 | 390.000€ |
-| Tercero 2ª | Mirador | 67 | 11 | 390.000€ |
-| Ático | Ático | 67 | 78 | 490.000€ |
-| Parking | — | — | — | desde 25.000€ |
-| Trastero | — | — | — | consultar |
+| Primero 2ª (incluye trasteros 4–7) | Garden House | 150 | 139 | 790.000€ |
+| Segundo 1ª (incluye una plaza de aparcamiento) | Mirador | 67 | 9 | 390.000€ |
+| Segundo 2ª (incluye una plaza de aparcamiento) | Mirador | 67 | 11 | 390.000€ |
+| Tercero 1ª (incluye una plaza de aparcamiento) | Mirador | 67 | 9 | 390.000€ |
+| Tercero 2ª (incluye una plaza de aparcamiento) | Mirador | 67 | 11 | 390.000€ |
+| Ático | Ático | 67 | 78 | 540.000€ |
+| Aparcamientos adicionales | — | — | — | desde 25.000€ |
+| Trasteros adicionales | — | — | — | consultar |
 
 Note: "Precios sin impuestos ni gastos. Vivienda: IVA 10% + AJD 1,5%."
 
