@@ -4,7 +4,8 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "start": "vercel dev"
+    "start": "vercel dev",
+    "test": "python3 -m unittest discover -s test -p 'test_*.py'"
   },
   "dependencies": {
     "nodemailer": "^8.0.3"

@@ -62,6 +62,20 @@ section{padding:6rem 2rem}
 .video-copy{align-self:start}
 .video-player{width:100%;aspect-ratio:16/9;display:block;background:var(--charcoal);border-radius:2px;box-shadow:0 18px 45px rgba(44,44,44,.18)}
 
+/* 3D MODEL */
+.model-3d{background:#24453F;color:var(--white)}
+.model-3d-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr);gap:4rem;align-items:center}
+.model-3d-visual{position:relative;min-height:460px;overflow:hidden;border:1px solid rgba(255,255,255,.18)}
+.model-3d-visual img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.model-3d-visual::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(36,69,63,.08),rgba(20,45,40,.52))}
+.model-3d-marker{position:absolute;left:1.5rem;bottom:1.5rem;z-index:1;font-family:var(--font-heading);font-size:clamp(2.6rem,7vw,5rem);font-weight:300;line-height:1;color:var(--white);letter-spacing:.04em}
+.model-3d .section-label{color:var(--gold-light)}
+.model-3d .section-title{color:var(--white)}
+.model-3d .section-text{color:rgba(255,255,255,.74)}
+.model-3d-note{margin:1.5rem 0 2rem;padding-left:1rem;border-left:2px solid var(--gold-light);color:rgba(255,255,255,.62);font-size:.86rem;line-height:1.6}
+.model-3d .btn{background:var(--gold-light);color:#1A2D29}
+.model-3d .btn:hover{background:var(--white);color:#1A2D29}
+
 /* LOCATION */
 .location-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:2.5rem}
 .location-item{display:flex;gap:.8rem;align-items:baseline}
@@ -168,6 +182,8 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
   nav .nav-links.open{display:flex}
   .hamburger{display:flex}
   .video-layout{grid-template-columns:1fr;gap:1.5rem}
+  .model-3d-layout{grid-template-columns:1fr;gap:2.5rem}
+  .model-3d-visual{min-height:350px}
   .location-grid{grid-template-columns:1fr}
   .gallery-grid,.gallery-strip{grid-template-columns:1fr 1fr}
   .project-types{grid-template-columns:1fr}
@@ -194,6 +210,7 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
   <ul class="nav-links" id="navLinks">
     <li><a href="#story">Historia</a></li>
     <li><a href="#video">Vídeo</a></li>
+    <li><a href="#model-3d">3D</a></li>
     <li><a href="#location">Ubicación</a></li>
     <li><a href="#project">Proyecto</a></li>
     <li><a href="#pricing">Precios</a></li>
@@ -255,6 +272,25 @@ footer{background:var(--charcoal);color:rgba(255,255,255,.4);text-align:center;p
       <video class="video-player" controls playsinline preload="metadata" poster="video/sg3-full-poster.jpeg">
         <source src="video/sg3-full-tour.mp4" type="video/mp4">
       </video>
+    </div>
+  </div>
+</section>
+
+<!-- 3D MODEL -->
+<section class="model-3d" id="model-3d">
+  <div class="container reveal">
+    <div class="model-3d-layout">
+      <div class="model-3d-visual">
+        <img src="img/render_alzado_new.jpg" alt="Vista exterior de SantGenís3" loading="lazy">
+        <span class="model-3d-marker" aria-hidden="true">SG3 · 3D</span>
+      </div>
+      <div class="model-3d-copy">
+        <p class="section-label">Maqueta interactiva</p>
+        <h2 class="section-title">Explora el proyecto en 3D</h2>
+        <p class="section-text">Gira el edificio, separa sus plantas y recorre la distribución, las terrazas y los espacios exteriores desde cualquier ángulo.</p>
+        <p class="model-3d-note">Herramienta visual de trabajo, pendiente de revisión técnica. La maqueta ayuda a comprender el proyecto, pero no sustituye los planos ni la documentación contractual.</p>
+        <a class="btn" href="https://sant-genis-3-maqueta.juan-vilade.chatgpt.site" target="_blank" rel="noopener noreferrer">Abrir la maqueta 3D</a>
+      </div>
     </div>
   </div>
 </section>
